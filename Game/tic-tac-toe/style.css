@@ -1,0 +1,327 @@
+/* 消失的井字棋 - 样式表 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+}
+
+/* 标题 */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* 游戏信息 */
+.game-info {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    justify-content: center;
+}
+
+.info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+
+.info-card .label {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.info-card .value {
+    display: block;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+/* 棋盘容器 */
+.board-container {
+    margin-bottom: 25px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    background: #333;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 棋盘格子 */
+.cell {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.cell:hover:not(.taken) {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.cell.taken {
+    cursor: not-allowed;
+}
+
+/* 棋子样式 */
+.cell.x {
+    color: #667eea;
+}
+
+.cell.o {
+    color: #764ba2;
+}
+
+/* 即将消失的棋子 - 闪烁效果 */
+.cell.fading {
+    animation: fade-warning 1s ease-in-out infinite;
+}
+
+@keyframes fade-warning {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.95);
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+}
+
+/* 获胜连线 */
+.cell.winner {
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    color: white;
+    animation: winner-pulse 0.5s ease-in-out 3;
+}
+
+@keyframes winner-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* 游戏状态 */
+.game-status {
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    font-size: 1.1em;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-status.winner {
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.3em;
+}
+
+.game-status.loser {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: white;
+    font-weight: bold;
+}
+
+.game-status.draw {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: white;
+    font-weight: bold;
+}
+
+/* 控制按钮 */
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-secondary {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* 游戏规则 */
+.rules {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.rules h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.rules ul {
+    list-style: none;
+    padding: 0;
+}
+
+.rules li {
+    color: #666;
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.rules li:before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: bold;
+}
+
+/* 历史记录 */
+.history-panel {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.history-panel h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.history-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.stat-item {
+    flex: 1;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2em;
+    font-weight: bold;
+    color: #667eea;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    .cell {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5em;
+    }
+
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    .game-info {
+        flex-wrap: wrap;
+    }
+
+    .info-card {
+        min-width: calc(50% - 8px);
+    }
+}

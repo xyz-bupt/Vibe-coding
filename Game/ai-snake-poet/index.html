@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 贪吃蛇诗人</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" id="gameContainer">
+        <!-- 顶部标题栏 -->
+        <header class="game-header">
+            <h1>AI 贪吃蛇诗人</h1>
+            <p class="subtitle">用诗歌创作，与 AI 共舞</p>
+        </header>
+
+        <!-- 游戏选择界面 -->
+        <div id="menuScreen" class="menu-screen">
+            <h2>选择游戏模式</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn active" data-mode="normal">
+                    <span class="mode-icon">🎮</span>
+                    <span class="mode-title">经典模式</span>
+                    <span class="mode-desc">自由创作诗歌</span>
+                </button>
+                <button class="mode-btn" data-mode="reverse">
+                    <span class="mode-icon">📝</span>
+                    <span class="mode-title">诗句挑战</span>
+                    <span class="mode-desc">按顺序吃单词</span>
+                </button>
+            </div>
+
+            <h2>选择主题</h2>
+            <div class="theme-buttons" id="themeButtons">
+                <button class="theme-btn active" data-theme="default">
+                    <span class="theme-icon">🎨</span>
+                    <span class="theme-name">默认</span>
+                </button>
+                <button class="theme-btn" data-theme="tang">
+                    <span class="theme-icon">📜</span>
+                    <span class="theme-name">唐诗</span>
+                </button>
+                <button class="theme-btn" data-theme="night">
+                    <span class="theme-icon">🌙</span>
+                    <span class="theme-name">夜</span>
+                </button>
+                <button class="theme-btn" data-theme="dream">
+                    <span class="theme-icon">💤</span>
+                    <span class="theme-name">梦</span>
+                </button>
+                <button class="theme-btn" data-theme="spring">
+                    <span class="theme-icon">🌸</span>
+                    <span class="theme-name">春</span>
+                </button>
+                <button class="theme-btn" data-theme="winter">
+                    <span class="theme-icon">❄️</span>
+                    <span class="theme-name">冬</span>
+                </button>
+                <button class="theme-btn" data-theme="fairytale">
+                    <span class="theme-icon">🏰</span>
+                    <span class="theme-name">童话</span>
+                </button>
+                <button class="theme-btn" data-theme="scifi">
+                    <span class="theme-icon">🚀</span>
+                    <span class="theme-name">科幻</span>
+                </button>
+            </div>
+
+            <button class="start-btn" id="startGameBtn">开始游戏</button>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="gameScreen" class="game-screen hidden">
+            <!-- 游戏信息栏 -->
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">得分</span>
+                    <span class="info-value" id="score">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">最高分</span>
+                    <span class="info-value" id="highScore">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">单词</span>
+                    <span class="info-value" id="wordCount">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">连击</span>
+                    <span class="info-value" id="combo">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">章节</span>
+                    <span class="info-value" id="chapter">1</span>
+                </div>
+            </div>
+
+            <!-- 游戏主区域 -->
+            <div class="game-main">
+                <!-- 收集区 -->
+                <div class="collection-panel">
+                    <h3>收集区</h3>
+                    <div class="collected-words" id="collectedWords">
+                        <p class="empty-hint">收集单词开始创作...</p>
+                    </div>
+                    <div class="collection-stats">
+                        <div class="stat-badge" id="currentThemeBadge">
+                            <span>主题</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 游戏画布 -->
+                <div class="canvas-container">
+                    <canvas id="gameCanvas" width="400" height="400"></canvas>
+                </div>
+
+                <!-- AI 对话区 -->
+                <div class="ai-dialogue-panel">
+                    <h3>AI 诗人</h3>
+                    <div class="dialogue-bubble" id="aiDialogue">
+                        准备好开始诗歌创作了吗？
+                    </div>
+                </div>
+            </div>
+
+            <!-- 诗歌拼图区 -->
+            <div class="poem-panel">
+                <h3>诗歌拼图</h3>
+                <div class="poem-lines" id="poemLines">
+                    <p class="empty-hint">诗句会在这里出现...</p>
+                </div>
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="controls">
+                <button class="control-btn" id="pauseBtn">暂停</button>
+                <button class="control-btn" id="saveBtn">保存创作</button>
+                <button class="control-btn" id="backBtn">返回菜单</button>
+            </div>
+
+            <!-- 操作说明 -->
+            <div class="instructions">
+                <p>使用方向键控制蛇移动 | 空格键暂停</p>
+            </div>
+        </div>
+
+        <!-- 成就弹窗 -->
+        <div id="achievementPopup" class="achievement-popup hidden">
+            <div class="achievement-content">
+                <span class="achievement-emoji" id="achievementEmoji">🏆</span>
+                <h3 class="achievement-title" id="achievementTitle">成就解锁！</h3>
+                <p class="achievement-desc" id="achievementDesc">描述文本</p>
+            </div>
+        </div>
+
+        <!-- 连击提示 -->
+        <div id="comboPopup" class="combo-popup hidden">
+            <span class="combo-number" id="comboNumber">3</span>
+            <span class="combo-text">连击！</span>
+        </div>
+
+        <!-- 画廊弹窗 -->
+        <div id="galleryModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>我的画廊</h2>
+                    <button class="close-btn" id="closeGallery">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="gallery-tabs">
+                        <button class="tab-btn active" data-tab="recent">最近</button>
+                        <button class="tab-btn" data-tab="best">最佳</button>
+                    </div>
+                    <div class="gallery-content" id="galleryContent">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 创作详情弹窗 -->
+        <div id="creationModal" class="modal hidden">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2>创作详情</h2>
+                    <button class="close-btn" id="closeCreation">&times;</button>
+                </div>
+                <div class="modal-body" id="creationDetail">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏结束弹窗 -->
+        <div id="gameOverModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>游戏结束</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="final-stats">
+                        <div class="final-score">
+                            <span class="label">得分</span>
+                            <span class="value" id="finalScore">0</span>
+                        </div>
+                        <div class="final-words">
+                            <span class="label">收集单词</span>
+                            <span class="value" id="finalWords">0</span>
+                        </div>
+                    </div>
+
+                    <div class="final-poem" id="finalPoem">
+                        <!-- 动态生成 -->
+                    </div>
+
+                    <div class="final-actions">
+                        <button class="action-btn" id="saveFinalBtn">保存创作</button>
+                        <button class="action-btn" id="shareBtn">分享</button>
+                        <button class="action-btn" id="playAgainBtn">再玩一次</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

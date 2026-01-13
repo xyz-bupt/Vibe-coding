@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>中国象棋 - 增强版</title>
+<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+<link href="css/chess.css" rel="stylesheet" type="text/css">
+<link href="css/enhanced.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<!-- 主菜单 -->
+<div class="menu_box" id="menuBox">
+	<div class="menu_init" id="indexBox">
+		<h1 class="game-title">中国象棋</h1>
+		<div class="menu-section">
+			<h3>对战模式</h3>
+			<a id="indexDy">人机对弈</a>
+			<a id="indexPvp">双人对战</a>
+		</div>
+		<div class="menu-section">
+			<h3>挑战模式</h3>
+			<a id="indexQj">残局挑战</a>
+			<a id="indexManual">经典棋谱</a>
+		</div>
+		<div class="menu-section">
+			<h3>其他</h3>
+			<a id="indexCollection">我的收藏</a>
+			<a id="stypeBtn">更换皮肤</a>
+		</div>
+	</div>
+
+	<!-- 人机对弈菜单 -->
+	<div class="menu_dy" id="menuDy">
+		<div class="menu_info">
+			<div class="menu_fh" id="menuFh"></div>
+			<h3>选择难度</h3>
+			<label><input name="depth" type="radio" value="2"> 菜鸟水平</label><br />
+			<label><input name="depth" type="radio" value="3" checked> 中级水平</label><br />
+			<label><input name="depth" type="radio" value="4"> 高手水平</label>
+		</div>
+		<a id="playBtn" class="btn-primary">开始对弈</a>
+	</div>
+
+	<!-- 双人对战菜单 -->
+	<div class="menu_dy" id="menuPvp">
+		<div class="menu_info">
+			<div class="menu_fh" id="menuFhPvp"></div>
+			<h3>双人对战</h3>
+			<p>与朋友面对面下棋</p>
+		</div>
+		<a id="pvpBtn" class="btn-primary">开始对战</a>
+	</div>
+
+	<!-- 残局挑战菜单 -->
+	<div class="menu_qj_enhanced" id="menuQj">
+		<div class="menu_info_large">
+			<div class="menu_fh" id="menuGb"></div>
+			<h3>选择残局</h3>
+			<div class="puzzle-categories" id="puzzleCategories">
+				<button class="category-btn active" data-category="basic">基础残局</button>
+				<button class="category-btn" data-category="intermediate">中级残局</button>
+				<button class="category-btn" data-category="advanced">高级残局</button>
+				<button class="category-btn" data-category="classic">江湖残局</button>
+			</div>
+			<div class="puzzle-list" id="puzzleList"></div>
+		</div>
+		<a id="puzzleBtn" class="btn-primary">开始挑战</a>
+	</div>
+
+	<!-- 经典棋谱菜单 -->
+	<div class="menu_manual" id="menuManual">
+		<div class="menu_info_large">
+			<div class="menu_fh" id="menuFhManual"></div>
+			<h3>经典棋谱</h3>
+			<div class="manual-categories" id="manualCategories">
+				<button class="category-btn active" data-category="opening">开局定式</button>
+				<button class="category-btn" data-category="midgame">中局技巧</button>
+				<button class="category-btn" data-category="famous">名局赏析</button>
+			</div>
+			<div class="manual-list" id="manualList"></div>
+		</div>
+		<a id="manualBtn" class="btn-primary">学习棋谱</a>
+	</div>
+
+	<!-- 我的收藏 -->
+	<div class="menu_collection" id="menuCollection">
+		<div class="menu_info_large">
+			<div class="menu_fh" id="menuFhCollection"></div>
+			<h3>我的收藏</h3>
+			<div class="collection-list" id="collectionList">
+				<p class="empty-hint">暂无收藏的对局</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 棋盘界面 -->
+<div id="chessBox" class="chess_box">
+	<canvas id="chess"></canvas>
+	<audio src="audio/click.wav" id="clickAudio" preload="auto"></audio>
+	<audio src="audio/select.wav" id="selectAudio" preload="auto"></audio>
+
+	<!-- 对战信息面板 -->
+	<div class="info-panel" id="infoPanel">
+		<div class="player-info">
+			<span class="player-label">红方</span>
+			<span class="player-time" id="redTime">10:00</span>
+		</div>
+		<div class="game-status" id="gameStatus">红方先行</div>
+		<div class="player-info">
+			<span class="player-time" id="blackTime">10:00</span>
+			<span class="player-label">黑方</span>
+		</div>
+	</div>
+
+	<!-- 控制按钮 -->
+	<div class="bn_box" id="bnBox">
+		<input type="button" name="restartBtn" id="restartBtn" value="重新开始" />
+		<input type="button" name="gohomeBtn" id="gohomeBtn" value="返回首页" />
+		<input type="button" name="regretBtn" id="regretBtn" value="悔棋" />
+		<input type="button" name="saveBtn" id="saveBtn" value="保存棋谱" />
+		<input type="button" name="hintBtn" id="hintBtn" value="提示" />
+	</div>
+
+	<!-- 棋谱记录面板 -->
+	<div class="moves-panel" id="movesPanel">
+		<div class="moves-header">
+			<span>着法记录</span>
+			<button id="toggleMoves">隐藏</button>
+		</div>
+		<div class="moves-list" id="movesList"></div>
+	</div>
+
+	<!-- 残局/棋谱导航 -->
+	<div class="manual-nav" id="manualNav" style="display:none;">
+		<button id="prevMove">← 上一步</button>
+		<span id="moveInfo">第 1 步</span>
+		<button id="nextMove">下一步 →</button>
+		<button id="autoPlay">自动播放</button>
+	</div>
+</div>
+
+<!-- 保存棋谱弹窗 -->
+<div class="modal" id="saveModal" style="display:none;">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3>保存棋谱</h3>
+			<span class="modal-close" id="closeSaveModal">&times;</span>
+		</div>
+		<div class="modal-body">
+			<label>棋谱名称：</label>
+			<input type="text" id="manualName" placeholder="输入棋谱名称" />
+			<label>备注：</label>
+			<textarea id="manualNote" placeholder="添加备注（可选）"></textarea>
+		</div>
+		<div class="modal-footer">
+			<button id="cancelSave" class="btn-secondary">取消</button>
+			<button id="confirmSave" class="btn-primary">保存</button>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/play.js"></script>
+<script type="text/javascript" src="js/AI.js"></script>
+<script type="text/javascript" src="js/gambit.js"></script>
+<script type="text/javascript" src="js/clasli.js"></script>
+<script type="text/javascript" src="js/puzzles.js"></script>
+<script type="text/javascript" src="js/manuals.js"></script>
+<script type="text/javascript" src="js/collection.js"></script>
+<script type="text/javascript" src="js/enhanced.js"></script>
+</body>
+</html>

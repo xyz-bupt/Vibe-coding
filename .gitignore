@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node modules
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

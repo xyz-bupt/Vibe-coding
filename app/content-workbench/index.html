@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内容生产工作台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>内容生产工作台</h1>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧表单区域 -->
+            <aside class="form-section">
+                <h2>新增内容任务</h2>
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="title">内容标题</label>
+                        <input type="text" id="title" required placeholder="请输入内容标题">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="channel">投放渠道</label>
+                        <select id="channel" required>
+                            <option value="">请选择渠道</option>
+                            <option value="微信公众号">微信公众号</option>
+                            <option value="微博">微博</option>
+                            <option value="小红书">小红书</option>
+                            <option value="抖音">抖音</option>
+                            <option value="B站">B站</option>
+                            <option value="知乎">知乎</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">当前状态</label>
+                        <select id="status" required>
+                            <option value="未开始">未开始</option>
+                            <option value="进行中">进行中</option>
+                            <option value="已发布">已发布</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="publishTime">计划发布时间</label>
+                        <input type="datetime-local" id="publishTime" required>
+                    </div>
+
+                    <button type="submit" class="btn-add">添加任务</button>
+                </form>
+            </aside>
+
+            <!-- 右侧任务列表区域 -->
+            <main class="task-section">
+                <!-- 统计区域 -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-label">任务总数</span>
+                        <span class="stat-value" id="totalCount">0</span>
+                    </div>
+                    <div class="stat-item stat-not-start">
+                        <span class="stat-label">未开始</span>
+                        <span class="stat-value" id="notStartCount">0</span>
+                    </div>
+                    <div class="stat-item stat-in-progress">
+                        <span class="stat-label">进行中</span>
+                        <span class="stat-value" id="inProgressCount">0</span>
+                    </div>
+                    <div class="stat-item stat-published">
+                        <span class="stat-label">已发布</span>
+                        <span class="stat-value" id="publishedCount">0</span>
+                    </div>
+                </div>
+
+                <!-- 任务列表 -->
+                <div class="table-container">
+                    <table id="taskTable">
+                        <thead>
+                            <tr>
+                                <th>内容标题</th>
+                                <th>投放渠道</th>
+                                <th>当前状态</th>
+                                <th>计划时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskBody">
+                            <!-- 任务列表将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state">
+                        暂无任务，请在左侧添加新任务
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 状态选择模态框 -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择新状态</h3>
+                <span class="modal-close" onclick="closeStatusModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="status-options">
+                    <button class="status-option-btn" onclick="selectStatus('未开始')">
+                        <span class="status-badge status-not-start">未开始</span>
+                    </button>
+                    <button class="status-option-btn" onclick="selectStatus('进行中')">
+                        <span class="status-badge status-in-progress">进行中</span>
+                    </button>
+                    <button class="status-option-btn" onclick="selectStatus('已发布')">
+                        <span class="status-badge status-published">已发布</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

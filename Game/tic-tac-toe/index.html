@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>井字棋</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>井字棋</h1>
+            <p class="subtitle">棋盘最多6枚，第7枚落下时第1枚消失</p>
+        </header>
+
+        <!-- 游戏信息 -->
+        <div class="game-info">
+            <div class="info-card">
+                <span class="label">当前玩家</span>
+                <span class="value" id="currentPlayer">X</span>
+            </div>
+            <div class="info-card">
+                <span class="label">棋子数量</span>
+                <span class="value" id="pieceCount">0 / 6</span>
+            </div>
+            <div class="info-card">
+                <span class="label">回合</span>
+                <span class="value" id="turnCount">0</span>
+            </div>
+        </div>
+
+        <!-- 游戏棋盘 -->
+        <div class="board-container">
+            <div class="board" id="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+        </div>
+
+        <!-- 游戏状态 -->
+        <div class="game-status" id="gameStatus"></div>
+
+        <!-- 控制按钮 -->
+        <div class="controls">
+            <button class="btn btn-primary" id="restartBtn">重新开始</button>
+            <button class="btn btn-secondary" id="difficultyBtn">难度: 简单</button>
+        </div>
+
+        <!-- 游戏规则 -->
+        <div class="rules">
+            <h3>游戏规则</h3>
+            <ul>
+                <li>3x3 标准九宫格，率先连成3字获胜</li>
+                <li>棋盘最多同时显示6枚最新棋子</li>
+                <li>第七枚棋子落下时，第一枚棋子消失</li>
+                <li>即将消失的棋子会闪烁提示</li>
+                <li>横向、纵向或对角线形成三枚连续相同棋子即获胜</li>
+            </ul>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="history-panel">
+            <h3>对战记录</h3>
+            <div class="history-stats">
+                <div class="stat-item">
+                    <span class="stat-label">玩家胜</span>
+                    <span class="stat-value" id="playerWins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">电脑胜</span>
+                    <span class="stat-value" id="aiWins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">平局</span>
+                    <span class="stat-value" id="draws">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
