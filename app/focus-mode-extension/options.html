@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self';">
+  <title>专注模式 - 设置</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header class="options-header">
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2" fill="none"/>
+          <circle cx="16" cy="16" r="6" fill="currentColor"/>
+          <line x1="16" y1="2" x2="16" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="16" y1="24" x2="16" y2="30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="2" y1="16" x2="8" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="24" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>专注模式</h1>
+          <p class="subtitle">Focus Mode Settings</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="options-main">
+      <div class="section">
+        <h2>通用设置</h2>
+
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="checkbox" id="autoEnable" class="setting-checkbox">
+            <div class="setting-text">
+              <span class="setting-title">自动启用</span>
+              <span class="setting-description">访问网站时自动开启专注模式</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="checkbox" id="eyeCareMode" class="setting-checkbox">
+            <div class="setting-text">
+              <span class="setting-title">护眼模式</span>
+              <span class="setting-description">减少蓝光，保护眼睛健康</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>阅读设置</h2>
+
+        <div class="setting-item">
+          <label class="setting-label" for="fontSize">
+            <span class="setting-title">字体大小</span>
+            <span class="setting-description">调整正文字体大小</span>
+          </label>
+          <div class="setting-control">
+            <input type="range" id="fontSize" min="14" max="24" value="18" class="setting-slider">
+            <span class="setting-value" id="fontSizeValue">18px</span>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label" for="lineHeight">
+            <span class="setting-title">行高</span>
+            <span class="setting-description">调整行间距</span>
+          </label>
+          <div class="setting-control">
+            <input type="range" id="lineHeight" min="1.4" max="2.2" step="0.1" value="1.8" class="setting-slider">
+            <span class="setting-value" id="lineHeightValue">1.8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>白名单</h2>
+        <p class="section-description">只在以下网站启用专注模式（留空表示所有网站）</p>
+
+        <div class="list-item">
+          <input type="text" id="whitelistInput" class="list-input" placeholder="例如: *.example.com 或 example.com/blog/*">
+          <button id="addWhitelist" class="list-button">添加</button>
+        </div>
+
+        <div id="whitelistList" class="list-container"></div>
+      </div>
+
+      <div class="section">
+        <h2>黑名单</h2>
+        <p class="section-description">在以下网站禁用专注模式</p>
+
+        <div class="list-item">
+          <input type="text" id="blacklistInput" class="list-input" placeholder="例如: *.youtube.com">
+          <button id="addBlacklist" class="list-button">添加</button>
+        </div>
+
+        <div id="blacklistList" class="list-container"></div>
+      </div>
+
+      <div class="section">
+        <h2>自定义选择器</h2>
+        <p class="section-description">添加额外的 CSS 选择器来隐藏元素</p>
+
+        <div class="list-item">
+          <input type="text" id="selectorInput" class="list-input" placeholder="例如: .my-ad-class, #promo-banner">
+          <button id="addSelector" class="list-button">添加</button>
+        </div>
+
+        <div id="selectorList" class="list-container"></div>
+      </div>
+
+      <div class="section">
+        <h2>快捷键</h2>
+        <div class="shortcut-info">
+          <div class="shortcut-item">
+            <span class="shortcut-label">切换专注模式</span>
+            <kbd class="shortcut-key">Ctrl+Shift+F</kbd>
+          </div>
+          <p class="shortcut-note">Mac 系统使用 Cmd+Shift+F</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="saveButton" class="button primary">保存设置</button>
+        <button id="resetButton" class="button secondary">重置默认</button>
+      </div>
+    </main>
+
+    <footer class="options-footer">
+      <p>专注模式 v1.0.0 | 提升阅读体验，专注核心内容</p>
+    </footer>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

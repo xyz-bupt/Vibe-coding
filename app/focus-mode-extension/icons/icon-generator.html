@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>专注模式 - 图标生成器</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+    .icon-preview {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .icon-item {
+      text-align: center;
+    }
+    .icon-item canvas {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .icon-item label {
+      font-size: 12px;
+      color: #666;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    .instructions {
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+    }
+    .instructions h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .instructions ol {
+      margin-left: 20px;
+    }
+    .instructions li {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>专注模式扩展 - 图标生成器</h1>
+
+    <div class="instructions">
+      <h3>使用说明：</h3>
+      <ol>
+        <li>点击下方按钮生成图标</li>
+        <li>右键点击每个图标，选择"图片另存为"</li>
+        <li>将图标保存到扩展的 icons 文件夹中</li>
+        <li>确保文件名分别为：icon16.png, icon32.png, icon48.png, icon128.png</li>
+      </ol>
+    </div>
+
+    <div class="icon-preview" id="iconPreview"></div>
+
+    <button onclick="generateIcons()">生成图标</button>
+  </div>
+
+  <script>
+    function generateIcons() {
+      const sizes = [16, 32, 48, 128];
+      const container = document.getElementById('iconPreview');
+      container.innerHTML = '';
+
+      sizes.forEach(size => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        // Outer circle
+        const strokeWidth = size / 32;
+        ctx.strokeStyle = '#667eea';
+        ctx.lineWidth = strokeWidth;
+        ctx.beginPath();
+        ctx.arc(size/2, size/2, size/2 - strokeWidth, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner circle
+        ctx.fillStyle = '#667eea';
+        ctx.beginPath();
+        ctx.arc(size/2, size/2, size * 0.1875, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Focus lines
+        ctx.strokeStyle = '#667eea';
+        ctx.lineWidth = strokeWidth;
+        ctx.lineCap = 'round';
+
+        const lineLength = size * 0.15625;
+        const center = size / 2;
+        const outerRadius = size / 2 - strokeWidth;
+
+        // Cardinal directions
+        ctx.beginPath();
+        ctx.moveTo(center, strokeWidth * 2);
+        ctx.lineTo(center, strokeWidth * 2 + lineLength);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(center, size - strokeWidth * 2);
+        ctx.lineTo(center, size - strokeWidth * 2 - lineLength);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(strokeWidth * 2, center);
+        ctx.lineTo(strokeWidth * 2 + lineLength, center);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(size - strokeWidth * 2, center);
+        ctx.lineTo(size - strokeWidth * 2 - lineLength, center);
+        ctx.stroke();
+
+        // Diagonal lines
+        const angle = Math.PI / 4;
+        const diagonalStart = strokeWidth * 3;
+
+        for (let i = 0; i < 4; i++) {
+          const a = angle * i + Math.PI / 4;
+          const x1 = center + Math.cos(a) * diagonalStart;
+          const y1 = center + Math.sin(a) * diagonalStart;
+          const x2 = center + Math.cos(a) * (diagonalStart + lineLength * 0.6);
+          const y2 = center + Math.sin(a) * (diagonalStart + lineLength * 0.6);
+
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'icon-item';
+
+        const label = document.createElement('label');
+        label.textContent = `icon${size}.png`;
+
+        wrapper.appendChild(canvas);
+        wrapper.appendChild(label);
+        container.appendChild(wrapper);
+
+        // Make downloadable
+        canvas.style.cursor = 'pointer';
+        canvas.title = '右键点击保存图片';
+        canvas.onclick = function() {
+          const link = document.createElement('a');
+          link.download = `icon${size}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        };
+      });
+    }
+  </script>
+</body>
+</html>

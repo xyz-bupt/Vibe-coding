@@ -1,0 +1,94 @@
+{
+  "$schema": "https://schema.tauri.app/config/1.0.0",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "dist"
+  },
+  "package": {
+    "productName": "象棋布局教学",
+    "version": "0.0.1"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": true,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": true,
+        "close": true,
+        "hide": true,
+        "maximize": true,
+        "minimize": true,
+        "show": true,
+        "unmaximize": true,
+        "unminimize": true
+      },
+      "notification": {
+        "all": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "Education",
+      "copyright": "Copyright © 2024 ChessLayout",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/256x256.png",
+        "icons/256x256@2x.png",
+        "icons/512x512.png",
+        "icons/512x512@2x.png",
+        "icons/1024x1024.png"
+      ],
+      "identifier": "com.chesslayout.desktop",
+      "longDescription": "象棋布局教学桌面应用，帮助用户学习中国象棋的各种布局和战术",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [],
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      },
+      "wix": {
+        "skipWebview": false
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "updater": {
+      "active": false
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 800,
+        "resizable": true,
+        "title": "象棋布局教学",
+        "width": 1200,
+        "minWidth": 600,
+        "minHeight": 400,
+        "center": true,
+        "visible": true,
+        "decorations": true,
+        "fileDropEnabled": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+[package]
+name = "chess-layout-pwa"
+version = "0.0.1"
+description = "象棋布局教学桌面应用"
+authors = ["you"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[dependencies]
+tauri = { version = "1.5", features = [ "window-all", "notification-all", "shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tauri-plugin-notification = "0.2"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]

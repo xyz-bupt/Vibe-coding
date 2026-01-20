@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self';">
+  <title>专注模式 - Focus Mode</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2" fill="none"/>
+          <circle cx="16" cy="16" r="6" fill="currentColor"/>
+          <line x1="16" y1="2" x2="16" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="16" y1="24" x2="16" y2="30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="2" y1="16" x2="8" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="24" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1>专注模式</h1>
+      </div>
+    </header>
+
+    <main class="popup-main">
+      <div class="status-section">
+        <div class="status-indicator" id="statusIndicator">
+          <span class="status-icon" id="statusIcon"></span>
+          <span class="status-text" id="statusText">检测中...</span>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <button id="toggleButton" class="toggle-button">
+          <span class="button-icon" id="buttonIcon">▶</span>
+          <span class="button-text" id="buttonText">启用专注模式</span>
+        </button>
+      </div>
+
+      <div class="quick-settings">
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="checkbox" id="autoEnable" class="setting-checkbox">
+            <span>自动启用</span>
+          </label>
+          <span class="setting-hint">访问网站时自动开启</span>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">
+            <input type="checkbox" id="eyeCareMode" class="setting-checkbox">
+            <span>护眼模式</span>
+          </label>
+          <span class="setting-hint">减少蓝光，保护眼睛</span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-item">
+          <span class="info-label">快捷键:</span>
+          <span class="info-value">Ctrl+Shift+F</span>
+        </div>
+      </div>
+    </main>
+
+    <footer class="popup-footer">
+      <button id="settingsButton" class="settings-button">
+        <span>⚙</span>
+        <span>高级设置</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

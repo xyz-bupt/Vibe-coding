@@ -1,0 +1,36 @@
+.chessboard-container {
+  position: relative;
+  display: inline-block;
+  background: #8B4513;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.chessboard-canvas {
+  display: block;
+  cursor: pointer;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background: #f0d9b5; /* Fallback background color */
+}
+
+.chessboard-canvas:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 454px;
+  height: 504px;
+  background: #f5f5f5;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #666;
+}
+
+.coordinates {
+  /* 预留坐标样式 */
+}

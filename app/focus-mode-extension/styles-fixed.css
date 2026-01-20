@@ -1,0 +1,836 @@
+/* 专注模式 - 内容脚本样式（修复版） */
+/* Focus Mode - Content Script Styles (Fixed) */
+
+/* ============================================
+   CSS 变量定义
+   ============================================ */
+:root {
+  /* 亮色主题 */
+  --focus-bg-light: #ffffff;
+  --focus-text-light: #333333;
+  --focus-heading-light: #1a202c;
+  --focus-primary-light: #667eea;
+  --focus-secondary-light: #764ba2;
+  --focus-border-light: #e2e8f0;
+  --focus-bg-subtle-light: #f7fafc;
+  --focus-text-muted-light: #4a5568;
+  --focus-code-light: #dc2626;
+  --focus-code-bg-light: #f1f5f9;
+  --focus-pre-bg-light: #1e293b;
+  --focus-pre-text-light: #f1f5f9;
+  --focus-quote-light: #2d3748;
+  --focus-quote-text-light: #1a202c;
+
+  /* 深色主题 */
+  --focus-bg-dark: #1a202c;
+  --focus-text-dark: #e2e8f0;
+  --focus-heading-dark: #f7fafc;
+  --focus-primary-dark: #90cdf4;
+  --focus-secondary-dark: #4a5568;
+  --focus-border-dark: #4a5568;
+  --focus-bg-subtle-dark: #2d3748;
+  --focus-text-muted-dark: #cbd5e0;
+  --focus-code-dark: #fca5a5;
+  --focus-code-bg-dark: #334155;
+  --focus-pre-bg-dark: #0f172a;
+  --focus-pre-text-dark: #e2e8f0;
+  --focus-quote-dark: #1e293b;
+  --focus-quote-text-dark: #e2e8f0;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* 默认使用亮色主题 */
+  --focus-bg: var(--focus-bg-light);
+  --focus-text: var(--focus-text-light);
+  --focus-heading: var(--focus-heading-light);
+  --focus-primary: var(--focus-primary-light);
+  --focus-secondary: var(--focus-secondary-light);
+  --focus-border: var(--focus-border-light);
+  --focus-bg-subtle: var(--focus-bg-subtle-light);
+  --focus-text-muted: var(--focus-text-muted-light);
+  --focus-code: var(--focus-code-light);
+  --focus-code-bg: var(--focus-code-bg-light);
+  --focus-pre-bg: var(--focus-pre-bg-light);
+  --focus-pre-text: var(--focus-pre-text-light);
+  --focus-quote: var(--focus-quote-light);
+  --focus-quote-text: var(--focus-quote-text-light);
+}
+
+/* ============================================
+   专注模式容器
+   ============================================ */
+#focus-mode-container {
+  position: fixed;
+  inset: 0;  /* 替代 top:0; left:0; right:0; bottom:0; */
+  background: var(--focus-bg);
+  z-index: 999999;  /* 从 MAX_SAFE_INTEGER 降低到安全值 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;  /* 为滚动条预留稳定空间 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  font-size: clamp(16px, var(--focus-font-size, 1.125rem), 24px);  /* 限制字体大小范围 */
+  line-height: clamp(1.5, var(--focus-line-height, 1.7), 2.2);  /* 限制行高范围 */
+  color: var(--focus-text);
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   控制栏
+   ============================================ */
+#focus-control-bar {
+  position: fixed;  /* 改为 fixed，始终固定在顶部 */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  padding: clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px);
+  background: linear-gradient(135deg, var(--focus-primary) 0%, var(--focus-secondary) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+}
+
+.focus-title {
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.focus-close-button,
+.focus-settings-button {
+  background: rgba(255, 255, 255, 0.25);  /* 提高不透明度 */
+  border: 2px solid rgba(255, 255, 255, 0.4);  /* 更明显的边框 */
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 8px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.focus-close-button:hover,
+.focus-settings-button:hover {
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.focus-close-button:active,
+.focus-settings-button:active {
+  transform: translateY(0);
+}
+
+/* 添加明显的焦点样式 */
+.focus-close-button:focus-visible,
+.focus-settings-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   内容容器
+   ============================================ */
+#focus-content {
+  max-width: min(90vw, 1400px);  /* 动态最大宽度 */
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 60px) clamp(16px, 3vw, 80px);
+  margin-top: 60px;  /* 为固定的控制栏留出空间 */
+}
+
+/* ============================================
+   内容样式优化
+   ============================================ */
+#focus-content h1,
+#focus-content h2,
+#focus-content h3,
+#focus-content h4,
+#focus-content h5,
+#focus-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--focus-heading);
+}
+
+#focus-content h1 {
+  margin-top: 0;
+  margin-bottom: 1em;
+  font-size: 2.5em;
+  border-bottom: 2px solid var(--focus-border);
+  padding-bottom: 0.5em;
+}
+
+#focus-content h2 {
+  font-size: 2em;
+}
+
+#focus-content h3 {
+  font-size: 1.75em;
+}
+
+#focus-content h4 {
+  font-size: 1.5em;
+}
+
+/* 标题之间的间距更小 */
+#focus-content h1 + h2,
+#focus-content h2 + h3,
+#focus-content h3 + h4 {
+  margin-top: 1em;
+}
+
+/* 列表、引用、代码块后的标题间距更小 */
+#focus-content ul + h2,
+#focus-content ol + h2,
+#focus-content blockquote + h2,
+#focus-content pre + h2,
+#focus-content table + h2 {
+  margin-top: 1.25em;
+}
+
+#focus-content p {
+  margin-bottom: 1.5em;
+  text-align: left;  /* 改为左对齐 */
+  max-width: 70ch;  /* 限制最佳阅读宽度 */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#focus-content a {
+  color: var(--focus-primary);
+  text-decoration: underline;  /* 改为下划线，更明显 */
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: background-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+#focus-content a:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+  text-decoration-thickness: 2px;
+}
+
+#focus-content a:focus-visible {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+#focus-content ul,
+#focus-content ol {
+  margin-bottom: 1.5em;
+  padding-left: clamp(1.5em, 4vw, 2.5em);  /* 响应式缩进 */
+}
+
+#focus-content li {
+  margin-bottom: 0.75em;
+  line-height: 1.7;
+}
+
+/* 嵌套列表 */
+#focus-content ul ul,
+#focus-content ol ol,
+#focus-content ul ol,
+#focus-content ol ul {
+  margin: 0.5em 0;
+  font-size: 0.95em;  /* 稍微缩小 */
+}
+
+/* 无序列表的自定义符号 */
+#focus-content ul {
+  list-style-type: disc;
+}
+
+#focus-content ul ul {
+  list-style-type: circle;
+}
+
+#focus-content ul ul ul {
+  list-style-type: square;
+}
+
+/* 有序列表的自定义样式 */
+#focus-content ol {
+  list-style-type: decimal;
+}
+
+#focus-content ol ol {
+  list-style-type: lower-alpha;
+}
+
+#focus-content ol ol ol {
+  list-style-type: lower-roman;
+}
+
+#focus-content blockquote {
+  margin: 2em 0;
+  padding: 16px 24px;
+  background: var(--focus-bg-subtle);
+  border-left: 4px solid var(--focus-primary);
+  color: var(--focus-quote-text);
+  border-radius: 0 8px 8px 0;
+}
+
+/* 保留段落引用的斜体 */
+#focus-content blockquote p {
+  font-style: italic;
+}
+
+/* 代码引用不使用斜体 */
+#focus-content blockquote code {
+  font-style: normal;
+}
+
+/* 嵌套引用 */
+#focus-content blockquote blockquote {
+  margin: 1em 0;
+  padding: 12px 20px;
+  background: var(--focus-bg-subtle);
+  border-left-color: var(--focus-secondary);
+}
+
+#focus-content code {
+  background: var(--focus-code-bg);
+  color: var(--focus-code);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.9em;
+  border: 1px solid var(--focus-border);
+}
+
+#focus-content pre {
+  background: var(--focus-pre-bg);
+  color: var(--focus-pre-text);
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 2em 0;
+  font-size: 0.9em;
+  line-height: 1.6;
+  border: 1px solid var(--focus-border);
+}
+
+#focus-content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+}
+
+#focus-content img,
+#focus-content video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 2em auto;
+  border-radius: 4px;  /* 减小圆角 */
+  box-shadow: var(--shadow-lg);
+}
+
+/* 对于小图片，不应用圆角 */
+#focus-content img[width]:not([width="200"]):not([width="300"]) {
+  border-radius: 0;
+}
+
+/* 对于包含重要信息的图片，保持清晰 */
+#focus-content img[alt*="图表"],
+#focus-content img[alt*="截图"],
+#focus-content img[alt*="chart"],
+#focus-content img[alt*="screenshot"] {
+  border-radius: 0;
+}
+
+/* 表格容器：支持水平滚动 */
+#focus-content .table-wrapper {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;  /* 防止过度滚动 */
+  margin: 2em 0;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px var(--focus-border);
+}
+
+#focus-content table {
+  width: 100%;
+  min-width: 600px;  /* 确保最小宽度，触发滚动 */
+  border-collapse: collapse;
+  margin: 0;
+}
+
+#focus-content th,
+#focus-content td {
+  padding: clamp(8px, 2vw, 16px);  /* 响应式 padding */
+  border: 1px solid var(--focus-border);
+  text-align: left;
+  white-space: nowrap;  /* 防止单元格内容换行 */
+}
+
+#focus-content th {
+  background: var(--focus-bg-subtle);
+  font-weight: 600;
+  color: var(--focus-heading);
+}
+
+#focus-content tr:nth-child(even) {
+  background: var(--focus-bg-subtle);
+}
+
+#focus-content tr:hover {
+  background: var(--focus-bg-subtle);
+  filter: brightness(0.95);
+}
+
+/* ============================================
+   无内容提示
+   ============================================ */
+.focus-no-content {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.focus-no-content h2 {
+  font-size: 2em;
+  color: var(--focus-heading);
+  margin-bottom: 1em;
+}
+
+.focus-no-content p {
+  font-size: 1.2em;
+  color: var(--focus-text-muted);
+  margin-bottom: 2em;
+}
+
+.focus-no-content button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: var(--focus-primary);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.focus-no-content button:hover {
+  background: var(--focus-secondary);
+  transform: translateY(-2px);
+}
+
+.focus-no-content button:focus-visible {
+  outline: 3px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   护眼模式叠加层
+   ============================================ */
+#focus-eye-care-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 166, 0, 0.15);
+  pointer-events: none;
+  -webkit-pointer-events: none;  /* Safari 支持 */
+  touch-action: none;
+  z-index: 999998;  /* 低于主容器但仍然很高 */
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   页面启用专注模式时的样式
+   ============================================ */
+body.focus-mode-enabled {
+  overflow: hidden;  /* 移除 !important */
+}
+
+/* ============================================
+   滚动条样式
+   ============================================ */
+#focus-mode-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+#focus-mode-container::-webkit-scrollbar-track {
+  background: var(--focus-bg-subtle);
+}
+
+#focus-mode-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+  border: 3px solid var(--focus-bg-subtle);
+}
+
+#focus-mode-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Firefox 滚动条 */
+#focus-mode-container {
+  scrollbar-width: thin;
+  scrollbar-color: #888 var(--focus-bg-subtle);
+}
+
+/* ============================================
+   响应式设计
+   ============================================ */
+/* 超小屏幕 */
+@media (max-width: 375px) {
+  #focus-content {
+    padding: 16px 12px;
+    font-size: 16px;
+  }
+
+  #focus-content h1 {
+    font-size: 1.5em;
+  }
+
+  #focus-content h2 {
+    font-size: 1.25em;
+  }
+
+  #focus-content h3 {
+    font-size: 1.1em;
+  }
+
+  .focus-title {
+    font-size: 14px;
+  }
+
+  #focus-control-bar {
+    padding: 10px 12px;
+  }
+
+  #focus-content {
+    margin-top: 50px;
+  }
+
+  #focus-content li {
+    padding-left: 0.5em;  /* 减少缩进 */
+  }
+
+  #focus-content ul,
+  #focus-content ol {
+    padding-left: 1.5em;
+  }
+}
+
+/* 小屏手机 */
+@media (min-width: 376px) and (max-width: 480px) {
+  #focus-content {
+    padding: 18px 14px;
+  }
+}
+
+/* 平板 */
+@media (max-width: 768px) {
+  #focus-content {
+    padding: 24px 16px;
+  }
+
+  #focus-content h1 {
+    font-size: 2em;
+  }
+
+  #focus-content h2 {
+    font-size: 1.75em;
+  }
+
+  #focus-content h3 {
+    font-size: 1.5em;
+  }
+
+  .focus-title {
+    font-size: 16px;
+  }
+
+  #focus-control-bar {
+    padding: 12px 16px;
+  }
+
+  #focus-content {
+    margin-top: 50px;
+  }
+
+  /* 标题间距优化 */
+  #focus-content h1,
+  #focus-content h2,
+  #focus-content h3 {
+    margin-top: 1.25em;
+    margin-bottom: 0.6em;
+  }
+
+  /* 表格移动端优化 */
+  #focus-content .table-wrapper {
+    margin: 2em -16px;  /* 抵消父容器 padding */
+    border-radius: 0;
+  }
+
+  #focus-content table {
+    min-width: 500px;
+  }
+
+  /* 卡片式布局（可选） */
+  #focus-content table.mobile-stack {
+    min-width: auto;
+    display: block;
+  }
+
+  #focus-content table.mobile-stack thead {
+    display: none;
+  }
+
+  #focus-content table.mobile-stack tbody,
+  #focus-content table.mobile-stack tr,
+  #focus-content table.mobile-stack td {
+    display: block;
+    width: 100%;
+  }
+
+  #focus-content table.mobile-stack td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  #focus-content table.mobile-stack td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 16px;
+    font-weight: 600;
+  }
+}
+
+/* 中等屏幕 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  #focus-content {
+    max-width: 700px;
+  }
+}
+
+/* 大屏幕 */
+@media (min-width: 1025px) and (max-width: 1400px) {
+  #focus-content {
+    max-width: 1000px;
+  }
+}
+
+/* 超大屏幕 */
+@media (min-width: 1401px) and (max-width: 1920px) {
+  #focus-content {
+    max-width: 1200px;
+  }
+}
+
+/* 4K 屏幕 */
+@media (min-width: 1921px) {
+  #focus-content {
+    max-width: 1600px;
+    font-size: 20px;
+  }
+}
+
+/* ============================================
+   打印样式
+   ============================================ */
+@media print {
+  #focus-control-bar {
+    display: none;
+  }
+
+  #focus-mode-container {
+    position: static;
+    overflow: visible;
+  }
+
+  #focus-content {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #focus-content a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  #focus-content a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    word-break: break-all;
+  }
+}
+
+/* ============================================
+   深色模式支持
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 切换到深色主题 */
+    --focus-bg: var(--focus-bg-dark);
+    --focus-text: var(--focus-text-dark);
+    --focus-heading: var(--focus-heading-dark);
+    --focus-primary: var(--focus-primary-dark);
+    --focus-secondary: var(--focus-secondary-dark);
+    --focus-border: var(--focus-border-dark);
+    --focus-bg-subtle: var(--focus-bg-subtle-dark);
+    --focus-text-muted: var(--focus-text-muted-dark);
+    --focus-code: var(--focus-code-dark);
+    --focus-code-bg: var(--focus-code-bg-dark);
+    --focus-pre-bg: var(--focus-pre-bg-dark);
+    --focus-pre-text: var(--focus-pre-text-dark);
+    --focus-quote: var(--focus-quote-dark);
+    --focus-quote-text: var(--focus-quote-text-dark);
+
+    /* 深色模式的阴影 */
+    --shadow-sm: 0 1px 2px 0 rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(255, 255, 255, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
+  }
+
+  /* 控制栏深色背景 */
+  #focus-control-bar {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  }
+
+  /* 滚动条深色模式 */
+  #focus-mode-container::-webkit-scrollbar-track {
+    background: #2d3748;
+  }
+
+  #focus-mode-container::-webkit-scrollbar-thumb {
+    background: #4a5568;
+  }
+
+  #focus-mode-container::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+  }
+
+  /* Firefox 滚动条 */
+  #focus-mode-container {
+    scrollbar-color: #4a5568 #2d3748;
+  }
+
+  /* 无内容提示按钮 */
+  .focus-no-content button {
+    background: var(--focus-primary-dark);
+  }
+
+  .focus-no-content button:hover {
+    background: var(--focus-secondary-dark);
+  }
+
+  /* 表格 hover 效果调整 */
+  #focus-content tr:hover {
+    filter: brightness(1.2);  /* 深色模式下使用亮度增加 */
+  }
+}
+
+/* ============================================
+   高对比度模式支持
+   ============================================ */
+@media (prefers-contrast: high) {
+  #focus-mode-container {
+    border: 2px solid var(--focus-text);
+  }
+
+  #focus-content a {
+    text-decoration-thickness: 2px;
+    text-decoration-style: solid;
+  }
+
+  #focus-content blockquote {
+    border-left-width: 6px;
+  }
+
+  .focus-close-button,
+  .focus-settings-button {
+    border-width: 3px;
+  }
+}
+
+/* ============================================
+   减少动画模式支持
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* 特别禁用按钮过渡 */
+  .focus-close-button,
+  .focus-settings-button,
+  #focus-content a,
+  .focus-no-content button {
+    transition-duration: 0s !important;
+  }
+}
+
+/* ============================================
+   浏览器兼容性回退
+   ============================================ */
+/* 不支持 clamp() 的浏览器 */
+@supports not (padding: clamp(1px, 2vw, 3px)) {
+  #focus-content {
+    padding: 40px 24px;
+  }
+
+  @media (max-width: 768px) {
+    #focus-content {
+      padding: 24px 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #focus-content {
+      padding: 20px 12px;
+    }
+  }
+
+  @media (max-width: 375px) {
+    #focus-content {
+      padding: 16px 12px;
+    }
+  }
+
+  #focus-mode-container {
+    font-size: var(--focus-font-size, 18px);
+    line-height: var(--focus-line-height, 1.7);
+  }
+}
+
+/* 不支持 inset 的浏览器 */
+@supports not (inset: 0) {
+  #focus-mode-container {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}

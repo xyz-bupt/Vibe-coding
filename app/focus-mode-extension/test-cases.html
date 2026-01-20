@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>专注模式测试页面 - Focus Mode Test Page</title>
+  <style>
+    /* 基础样式（模拟常见网站） */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+    }
+
+    /* 模拟干扰元素 */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 300px;
+      height: 100vh;
+      background: #e0e0e0;
+      padding: 20px;
+    }
+
+    .advertisement {
+      background: #ffeb3b;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .social-share {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #2196F3;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    /* 主要内容 */
+    .main-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #fff;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 0.5em;
+      color: #1a202c;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5em;
+    }
+
+    h2 {
+      font-size: 2em;
+      margin-top: 2em;
+      margin-bottom: 1em;
+      color: #1a202c;
+    }
+
+    h3 {
+      font-size: 1.75em;
+      margin-top: 1.5em;
+      margin-bottom: 0.75em;
+      color: #1a202c;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      text-align: justify;
+    }
+
+    /* 代码块 */
+    code {
+      background: #f7fafc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #e53e3e;
+    }
+
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 2em 0;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* 引用 */
+    blockquote {
+      margin: 2em 0;
+      padding: 16px 24px;
+      background: #f7fafc;
+      border-left: 4px solid #667eea;
+      font-style: italic;
+      color: #4a5568;
+    }
+
+    /* 列表 */
+    ul, ol {
+      margin-bottom: 1.5em;
+      padding-left: 2em;
+    }
+
+    li {
+      margin-bottom: 0.75em;
+    }
+
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2em 0;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      text-align: left;
+    }
+
+    th {
+      background: #f7fafc;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: #f7fafc;
+    }
+
+    tr:hover {
+      background: #edf2f7;
+    }
+
+    /* 图片 */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 2em auto;
+      border-radius: 8px;
+    }
+
+    /* 链接 */
+    a {
+      color: #667eea;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    a:hover {
+      border-bottom-color: #667eea;
+    }
+
+    /* 测试部分标记 */
+    .test-section {
+      margin: 3em 0;
+      padding: 2em;
+      border: 2px dashed #e2e8f0;
+      border-radius: 8px;
+    }
+
+    .test-section h2 {
+      margin-top: 0;
+    }
+
+    .test-label {
+      display: inline-block;
+      background: #667eea;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.875em;
+      margin-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+  <!-- 模拟干扰元素 -->
+  <div class="sidebar">
+    <h3>侧边栏</h3>
+    <p>这是应该被隐藏的侧边栏内容。</p>
+  </div>
+
+  <div class="social-share">
+    社交分享
+  </div>
+
+  <div class="advertisement">
+    <strong>广告</strong>
+    <p>这是应该被隐藏的广告内容。</p>
+  </div>
+
+  <!-- 主要内容 -->
+  <main class="main-content">
+    <span class="test-label">测试 1: 基本文本</span>
+    <h1>专注模式功能测试页面</h1>
+
+    <p>
+      欢迎使用专注模式测试页面！这个页面包含了各种类型的内容，用于验证专注模式插件的显示效果和功能。
+      通过这些测试用例，可以确保插件在不同场景下都能正常工作。
+    </p>
+
+    <p>
+      专注模式旨在帮助用户专注于阅读，通过移除页面上的干扰元素（如广告、侧边栏、社交媒体按钮等），
+      只保留主要内容。同时，优化了排版、字体大小、行高和颜色对比度，提供更舒适的阅读体验。
+    </p>
+
+    <div class="test-section">
+      <span class="test-label">测试 2: 标题层级</span>
+      <h2>一级标题 (h2)</h2>
+      <p>这是一级标题下的段落内容。</p>
+
+      <h3>二级标题 (h3)</h3>
+      <p>这是二级标题下的段落内容。</p>
+
+      <h4>三级标题 (h4)</h4>
+      <p>这是三级标题下的段落内容。</p>
+
+      <h5>四级标题 (h5)</h5>
+      <p>这是四级标题下的段落内容。</p>
+
+      <h6>五级标题 (h6)</h6>
+      <p>这是五级标题下的段落内容。</p>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 3: 链接</span>
+      <h2>链接测试</h2>
+      <p>
+        这是一个<a href="#">普通链接</a>，用于测试链接的样式和交互效果。
+        链接应该有清晰的颜色和下划线，hover 时应该有视觉反馈。
+      </p>
+      <p>
+        这是一个更长的链接示例：<a href="#">https://example.com/very/long/url/path/that/should/wrap/properly</a>
+      </p>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 4: 列表</span>
+      <h2>列表测试</h2>
+
+      <h3>无序列表</h3>
+      <ul>
+        <li>第一项内容</li>
+        <li>第二项内容</li>
+        <li>第三项内容
+          <ul>
+            <li>嵌套项 1</li>
+            <li>嵌套项 2
+              <ul>
+                <li>三层嵌套项 1</li>
+                <li>三层嵌套项 2</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>第四项内容</li>
+      </ul>
+
+      <h3>有序列表</h3>
+      <ol>
+        <li>第一步：打开浏览器</li>
+        <li>第二步：安装扩展</li>
+        <li>第三步：启用专注模式
+          <ol>
+            <li>点击扩展图标</li>
+            <li>选择"启用专注模式"</li>
+          </ol>
+        </li>
+        <li>第四步：享受阅读</li>
+      </ol>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 5: 引用</span>
+      <h2>引用测试</h2>
+
+      <blockquote>
+        <p>这是一个简单的引用块。引用块应该有特殊的背景色和左边框，以区别于普通段落。</p>
+      </blockquote>
+
+      <blockquote>
+        <p>这是一个包含多段内容的引用块。</p>
+        <p>这是引用块的第二段内容。</p>
+        <p>这是引用块的第三段内容，应该保持斜体样式。</p>
+      </blockquote>
+
+      <blockquote>
+        <p>这是一个包含代码的引用：<code>console.log('Hello, Focus Mode!');</code></p>
+      </blockquote>
+
+      <blockquote>
+        <p>这是嵌套引用的外层。</p>
+        <blockquote>
+          <p>这是嵌套引用的内层。嵌套引用应该有不同的背景色和边框颜色。</p>
+        </blockquote>
+      </blockquote>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 6: 代码块</span>
+      <h2>代码块测试</h2>
+
+      <p>行内代码示例：使用 <code>document.getElementById()</code> 获取元素。</p>
+
+      <h3>JavaScript 代码</h3>
+      <pre><code>function enableFocusMode() {
+  if (isFocusModeEnabled) return;
+
+  try {
+    saveOriginalState();
+    removeDistractions();
+    createFocusContainer();
+    extractMainContent();
+    applyFocusStyles();
+
+    isFocusModeEnabled = true;
+    notifyStatusChange();
+  } catch (error) {
+    console.error('启用专注模式失败:', error);
+  }
+}</code></pre>
+
+      <h3>Python 代码</h3>
+      <pre><code>class FocusMode:
+    def __init__(self):
+        self.enabled = False
+        self.settings = {
+            'fontSize': 18,
+            'lineHeight': 1.8,
+            'eyeCareMode': False
+        }
+
+    def enable(self):
+        if not self.enabled:
+            self.enabled = True
+            self.apply_styles()
+            self.remove_distractions()</code></pre>
+
+      <h3>HTML 代码</h3>
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;专注模式&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;欢迎使用专注模式&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 7: 表格</span>
+      <h2>表格测试</h2>
+
+      <h3>简单表格</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>功能</th>
+            <th>状态</th>
+            <th>优先级</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>移除干扰元素</td>
+            <td>已完成</td>
+            <td>高</td>
+          </tr>
+          <tr>
+            <td>优化排版</td>
+            <td>已完成</td>
+            <td>高</td>
+          </tr>
+          <tr>
+            <td>深色模式</td>
+            <td>进行中</td>
+            <td>中</td>
+          </tr>
+          <tr>
+            <td>护眼模式</td>
+            <td>已完成</td>
+            <td>低</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>宽表格（测试水平滚动）</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>邮箱</th>
+            <th>注册日期</th>
+            <th>最后登录</th>
+            <th>状态</th>
+            <th>角色</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>001</td>
+            <td>张三</td>
+            <td>zhangsan@example.com</td>
+            <td>2024-01-15</td>
+            <td>2024-01-20 10:30</td>
+            <td>活跃</td>
+            <td>管理员</td>
+            <td>编辑 删除</td>
+          </tr>
+          <tr>
+            <td>002</td>
+            <td>李四</td>
+            <td>lisi@example.com</td>
+            <td>2024-01-16</td>
+            <td>2024-01-19 15:45</td>
+            <td>活跃</td>
+            <td>用户</td>
+            <td>编辑 删除</td>
+          </tr>
+          <tr>
+            <td>003</td>
+            <td>王五</td>
+            <td>wangwu@example.com</td>
+            <td>2024-01-17</td>
+            <td>2024-01-18 09:20</td>
+            <td>离线</td>
+            <td>用户</td>
+            <td>编辑 删除</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 8: 图片</span>
+      <h2>图片测试</h2>
+
+      <h3>普通图片</h3>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect width='800' height='400' fill='%23667eea'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='32'%3E测试图片 (800x400)%3C/text%3E%3C/svg%3E" alt="测试图片 800x400" width="800" height="400">
+
+      <h3>小图片（测试圆角）</h3>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='200' height='100' fill='%23764ba2'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='16'%3E小图片 (200x100)%3C/text%3E%3C/svg%3E" alt="小图片 200x100" width="200" height="100">
+
+      <h3>宽幅图片</h3>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='600'%3E%3Crect width='1200' height='600' fill='%2348bb78'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='48'%3E宽幅图片 (1200x600)%3C/text%3E%3C/svg%3E" alt="宽幅图片 1200x600" width="1200" height="600">
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 9: 嵌套内容</span>
+      <h2>嵌套内容测试</h2>
+
+      <p>这是一个包含多种嵌套元素的段落：</p>
+
+      <ul>
+        <li>
+          列表项 1，包含：
+          <ul>
+            <li>嵌套无序列表</li>
+            <li>包含<a href="#">链接</a></li>
+            <li>包含<code>行内代码</code></li>
+          </ul>
+        </li>
+        <li>
+          列表项 2，包含：
+          <ol>
+            <li>嵌套有序列表</li>
+            <li>测试编号</li>
+          </ol>
+        </li>
+        <li>
+          列表项 3，包含引用：
+          <blockquote>
+            <p>列表中的引用块，测试样式继承。</p>
+          </blockquote>
+        </li>
+      </ul>
+
+      <blockquote>
+        <p>引用中的列表：</p>
+        <ul>
+          <li>引用内的列表项 1</li>
+          <li>引用内的列表项 2</li>
+        </ul>
+      </blockquote>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 10: 特殊字符和符号</span>
+      <h2>特殊字符和符号测试</h2>
+
+      <p>
+        中文标点：，。；：！？""''（）【】《》
+      </p>
+
+      <p>
+        英文标点：, . ; : ! ? " ' ( ) [ ] { }
+      </p>
+
+      <p>
+        数学符号：+ - × ÷ = ≠ ± √ ∞ ∑ ∏
+      </p>
+
+      <p>
+        货币符号：¥ $ € £ ₩
+      </p>
+
+      <p>
+        箭头符号：← → ↑ ↓ ↔ ↖ ↗ ↘ ↙
+      </p>
+
+      <p>
+        其他符号：© ® ™ § ¶ † ‡ • …
+      </p>
+
+      <p>
+        Emoji：😀 😃 😄 😁 😆 😅 🤣 😂 🙂 🙃 😉 😊 😇 🥰 😍 🤩 😘
+      </p>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 11: 长文本</span>
+      <h2>长文本测试（测试滚动性能）</h2>
+
+      <p>
+        在当今数字化时代，我们每天都会接触到大量的信息。从社交媒体的推送通知到电子邮件的收件箱，
+        从新闻网站的各种标题到视频平台的推荐内容，信息无处不在。虽然这些信息有其价值，
+        但过多的干扰往往会让我们难以专注于真正重要的内容。
+      </p>
+
+      <p>
+        专注模式正是为了解决这个问題而设计的。它通过智能识别页面的主要内容，移除广告、侧边栏、
+        社交媒体按钮等干扰元素，为用户提供一个干净、专注的阅读环境。同时，它还优化了排版、
+        字体大小、行高和颜色对比度，让阅读变得更加舒适和愉快。
+      </p>
+
+      <p>
+        无论你是在阅读技术博客、新闻文章，还是在学习教程、研究报告，专注模式都能帮助你提高
+        阅读效率和理解深度。让我们在这个充满干扰的世界中，重新找回专注阅读的乐趣吧！
+      </p>
+
+      <p>
+        专注模式的主要特点包括：智能内容识别、响应式设计、深色模式支持、护眼模式、可自定义设置等。
+        这些特点共同构成了一个强大而灵活的阅读辅助工具，能够适应不同用户的需求和偏好。
+      </p>
+
+      <p>
+        使用专注模式非常简单。只需要点击浏览器扩展图标，然后选择"启用专注模式"即可。
+        也可以使用快捷键 Ctrl+Shift+F（Mac 上是 Cmd+Shift+F）快速切换。
+        如果需要退出专注模式，只需点击控制栏上的"关闭"按钮，或者按 Escape 键。
+      </p>
+
+      <p>
+        专注模式还支持多种自定义设置，包括字体大小、行高、主题颜色等。你可以在设置页面中
+        调整这些参数，创建最适合你的阅读环境。此外，还可以设置白名单和黑名单，控制专注模式
+        在哪些网站上自动启用。
+      </p>
+
+      <p>
+        护眼模式是专注模式的另一个特色功能。它通过在页面上添加一层暖色调的叠加层，减少蓝光，
+        保护眼睛。特别是在晚上使用电脑时，护眼模式可以有效减轻眼睛疲劳，改善睡眠质量。
+      </p>
+
+      <p>
+        专注模式不仅仅是一个阅读工具，更是一种生活方式的体现。在这个信息爆炸的时代，
+        学会专注于重要内容，过滤无关干扰，是我们每个人都需要掌握的技能。让我们一起，
+        用专注模式，开启更高效、更愉悦的阅读体验！
+      </p>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 12: 空内容场景</span>
+      <h2>空内容测试</h2>
+      <p>
+        如果页面上没有足够的内容，专注模式应该显示"未找到主要内容"的提示。
+        这个测试页面有足够的内容，所以不应该出现该提示。
+      </p>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 13: 交互元素</span>
+      <h2>交互元素测试</h2>
+
+      <p>
+        测试按钮：
+        <button onclick="alert('按钮被点击！')" style="padding: 8px 16px; margin: 0 10px; cursor: pointer;">
+          测试按钮
+        </button>
+        <button onclick="console.log('日志输出')" style="padding: 8px 16px; margin: 0 10px; cursor: pointer;">
+          日志按钮
+        </button>
+      </p>
+
+      <p>
+        测试复选框：
+        <label style="margin: 0 10px;">
+          <input type="checkbox" onchange="console.log('复选框状态改变')"> 选项 1
+        </label>
+        <label style="margin: 0 10px;">
+          <input type="checkbox"> 选项 2
+        </label>
+      </p>
+
+      <p>
+        测试单选框：
+        <label style="margin: 0 10px;">
+          <input type="radio" name="test" value="1"> 选项 A
+        </label>
+        <label style="margin: 0 10px;">
+          <input type="radio" name="test" value="2"> 选项 B
+        </label>
+      </p>
+
+      <p>
+        测试下拉菜单：
+        <select style="padding: 4px; margin: 0 10px;">
+          <option>选项 1</option>
+          <option>选项 2</option>
+          <option>选项 3</option>
+        </select>
+      </p>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 14: 边界情况</span>
+      <h2>边界情况测试</h2>
+
+      <h3>空段落</h3>
+      <p></p>
+      <p>    </p>
+
+      <h3>只有空格的段落</h3>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;</p>
+
+      <h3>超长单词（测试换行）</h3>
+      <p>
+        这是一个超长的英文单词，用于测试文本换行：
+        Supercalifragilisticexpialidociouspseudopseudohypoparathyroidism
+      </p>
+
+      <h3>超长 URL</h3>
+      <p>
+        <a href="#">https://example.com/very/long/url/path/that/should/wrap/properly/on/mobile/devices/and/small/screens/without/causing/horizontal/overflow/issues</a>
+      </p>
+
+      <h3>嵌套层级很深的内容</h3>
+      <div>
+        <div>
+          <div>
+            <p>这是三层嵌套的 div 中的段落。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <span class="test-label">测试 15: 性能测试</span>
+      <h2>性能测试（大量内容）</h2>
+
+      <h3>100 个短段落</h3>
+      <script>
+        // 生成 100 个短段落
+        for (let i = 1; i <= 100; i++) {
+          document.write(`<p>这是第 ${i} 个段落，用于测试大量内容的渲染性能和滚动流畅度。</p>`);
+        }
+      </script>
+
+      <h3>50 个列表项</h3>
+      <ul>
+        <script>
+          for (let i = 1; i <= 50; i++) {
+            document.write(`<li>列表项 ${i}：这是一个列表项，用于测试大量列表项的渲染性能。</li>`);
+          }
+        </script>
+      </ul>
+    </div>
+
+  </main>
+
+  <div class="advertisement">
+    <strong>底部广告</strong>
+    <p>这是应该被隐藏的底部广告内容。</p>
+  </div>
+
+  <footer style="background: #333; color: #fff; padding: 40px 20px; text-align: center;">
+    <p>这是应该被隐藏的页脚内容。</p>
+    <p>&copy; 2024 专注模式测试页面</p>
+  </footer>
+
+  <script>
+    // 添加测试信息到控制台
+    console.log('='.repeat(60));
+    console.log('专注模式测试页面已加载');
+    console.log('='.repeat(60));
+    console.log('测试项目：');
+    console.log('1. 基本文本显示');
+    console.log('2. 标题层级');
+    console.log('3. 链接样式和交互');
+    console.log('4. 列表（包括嵌套列表）');
+    console.log('5. 引用块（包括嵌套引用）');
+    console.log('6. 代码块');
+    console.log('7. 表格（包括宽表格）');
+    console.log('8. 图片（不同尺寸）');
+    console.log('9. 嵌套内容');
+    console.log('10. 特殊字符和符号');
+    console.log('11. 长文本（滚动性能）');
+    console.log('12. 空内容场景');
+    console.log('13. 交互元素');
+    console.log('14. 边界情况');
+    console.log('15. 性能测试（大量内容）');
+    console.log('='.repeat(60));
+    console.log('启用专注模式后，检查以下内容：');
+    console.log('- 干扰元素（侧边栏、广告、社交分享、页脚）是否被隐藏');
+    console.log('- 主要内容是否完整显示');
+    console.log('- 排版是否清晰易读');
+    console.log('- 所有交互元素是否可点击');
+    console.log('- 表格是否可以水平滚动（移动端）');
+    console.log('- 代码块对比度是否足够');
+    console.log('- 深色模式是否正确应用');
+    console.log('='.repeat(60));
+  </script>
+</body>
+</html>
