@@ -1,0 +1,88 @@
+pomodoro-todo-app/
+├── index.html                          # 主 HTML 文件（450+ 行）
+├── package.json                        # 项目配置
+├── tsconfig.json                       # TypeScript 配置
+├── vite.config.ts                      # Vite 构建配置
+├── .gitignore                          # Git 忽略文件
+│
+├── docs/                               # 文档目录
+│   ├── README.md                       # 项目说明
+│   ├── QUICKSTART.md                   # 快速启动指南
+│   ├── DEMO.md                         # 功能演示
+│   ├── COMPONENT_INTERACTION.md       # 组件交互说明
+│   └── IMPLEMENTATION_SUMMARY.md       # 实现总结
+│
+├── styles/
+│   └── main.css                        # 主样式文件（1200+ 行）
+│       ├── CSS 变量系统
+│       ├── 全局样式
+│       ├── 布局样式
+│       ├── 组件样式
+│       ├── 响应式样式
+│       └── 打印样式
+│
+└── src/
+    ├── main.ts                         # 应用入口（150+ 行）
+    │
+    ├── types.ts                        # 类型定义（150+ 行）
+    │   ├── Task, TaskPriority, TaskStatus
+    │   ├── TimerMode, TimerState, TimerInfo
+    │   ├── DailyStatistics, TotalStatistics
+    │   ├── AppSettings, ToastOptions
+    │   └── 其他接口和类型
+    │
+    ├── components/                     # UI 组件
+    │   ├── TaskList.ts                # 任务列表（400+ 行）
+    │   │   ├── 任务渲染
+    │   │   ├── 任务过滤
+    │   │   ├── 任务操作
+    │   │   └── 任务持久化
+    │   │
+    │   ├── TimerDisplay.ts            # 计时器显示（300+ 行）
+    │   │   ├── 时间显示
+    │   │   ├── 进度环
+    │   │   ├── 状态指示
+    │   │   └── 视觉提醒
+    │   │
+    │   ├── StatisticsPanel.ts         # 统计面板（250+ 行）
+    │   │   ├── 每日统计
+    │   │   ├── 总体统计
+    │   │   └── 周历显示
+    │   │
+    │   ├── TaskForm.ts                # 任务表单（300+ 行）
+    │   │   ├── 表单显示
+    │   │   ├── 表单验证
+    │   │   └── 数据提交
+    │   │
+    │   ├── SettingsModal.ts           # 设置对话框（350+ 行）
+    │   │   ├── 设置表单
+    │   │   ├── 数据验证
+    │   │   ├── 主题应用
+    │   │   └── 设置持久化
+    │   │
+    │   └── PomodoroTimer.ts           # 番茄钟核心（400+ 行）
+    │       ├── 计时逻辑
+    │       ├── 模式切换
+    │       ├── 自动流程
+    │       └── 状态管理
+    │
+    └── utils/                          # 工具类
+        ├── EventEmitter.ts            # 事件发射器（100+ 行）
+        │   ├── 事件注册
+        │   ├── 事件触发
+        │   └── 事件移除
+        │
+        └── ToastManager.ts            # Toast 通知（200+ 行）
+            ├── 通知显示
+            ├── 通知隐藏
+            ├── 便捷方法
+            └── 自动消失
+
+主要文件统计：
+- HTML: 1 文件 (~450 行)
+- CSS: 1 文件 (~1200 行)
+- TypeScript: 9 文件 (~2500 行)
+- 配置文件: 4 文件
+- 文档文件: 5 文件
+
+总计：~4600+ 行代码和文档

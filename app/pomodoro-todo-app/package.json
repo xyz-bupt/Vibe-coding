@@ -1,0 +1,26 @@
+{
+  "name": "pomodoro-todo-app",
+  "version": "1.0.0",
+  "description": "智能番茄钟待办事项应用 - 结合番茄工作法和任务管理的生产力工具",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "pomodoro",
+    "todo",
+    "productivity",
+    "timer",
+    "task-management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

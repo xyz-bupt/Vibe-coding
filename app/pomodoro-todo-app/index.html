@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="智能番茄钟待办事项应用 - 结合番茄工作法和任务管理的生产力工具">
+    <meta name="theme-color" content="#e74c3c">
+    <title>番茄钟 To-Do | 智能任务管理</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>">
+</head>
+<body>
+    <!-- 跳过导航链接（无障碍） -->
+    <a href="#main-content" class="skip-link">跳转到主内容</a>
+
+    <!-- 顶部导航栏 -->
+    <header class="app-header" role="banner">
+        <div class="header-container">
+            <h1 class="app-title">
+                <span class="app-icon" aria-hidden="true">🍅</span>
+                <span>番茄钟 To-Do</span>
+            </h1>
+            <nav class="header-nav" role="navigation" aria-label="主导航">
+                <button
+                    id="settings-btn"
+                    class="icon-btn"
+                    aria-label="打开设置"
+                    title="设置"
+                    data-shortcut="Alt+S">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3m15.364 6.364l-4.243-4.243M9.879 9.879L5.636 5.636m12.728 0l-4.243 4.243M9.879 14.121l-4.243 4.243"></path>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main id="main-content" class="app-main" role="main">
+        <!-- 番茄钟计时器区域 -->
+        <section id="timer-section" class="timer-section" aria-labelledby="timer-heading">
+            <h2 id="timer-heading" class="visually-hidden">番茄钟计时器</h2>
+
+            <!-- 当前任务提示 -->
+            <div id="current-task-display" class="current-task" role="status" aria-live="polite">
+                <p class="current-task-text">选择一个任务开始专注</p>
+            </div>
+
+            <!-- 计时器显示 -->
+            <div class="timer-display-container">
+                <div id="timer-display" class="timer-display" role="timer" aria-live="off" aria-atomic="true">
+                    <span id="timer-minutes" class="timer-time">25</span>
+                    <span class="timer-separator">:</span>
+                    <span id="timer-seconds" class="timer-time">00</span>
+                </div>
+
+                <!-- 计时器状态指示器 -->
+                <div id="timer-status" class="timer-status" aria-live="polite">
+                    <span class="status-indicator"></span>
+                    <span class="status-text">准备就绪</span>
+                </div>
+
+                <!-- 进度环 -->
+                <svg class="timer-progress" viewBox="0 0 200 200" aria-hidden="true">
+                    <circle
+                        class="progress-ring-bg"
+                        cx="100"
+                        cy="100"
+                        r="90"
+                        fill="none"
+                        stroke-width="8"/>
+                    <circle
+                        id="progress-ring"
+                        class="progress-ring"
+                        cx="100"
+                        cy="100"
+                        r="90"
+                        fill="none"
+                        stroke-width="8"
+                        stroke-dasharray="565.48"
+                        stroke-dashoffset="0"
+                        stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <!-- 计时器控制按钮 -->
+            <div class="timer-controls" role="group" aria-label="计时器控制">
+                <button
+                    id="timer-toggle-btn"
+                    class="btn btn-primary btn-large"
+                    aria-label="开始计时"
+                    data-shortcut="Space">
+                    <span class="btn-icon" aria-hidden="true">▶</span>
+                    <span class="btn-text">开始</span>
+                </button>
+
+                <button
+                    id="timer-reset-btn"
+                    class="btn btn-secondary btn-large"
+                    aria-label="重置计时器"
+                    data-shortcut="Alt+R">
+                    <span class="btn-icon" aria-hidden="true">↺</span>
+                    <span class="btn-text">重置</span>
+                </button>
+
+                <button
+                    id="timer-skip-btn"
+                    class="btn btn-secondary btn-large"
+                    aria-label="跳过当前时段"
+                    data-shortcut="Alt+S">
+                    <span class="btn-icon" aria-hidden="true">⏭</span>
+                    <span class="btn-text">跳过</span>
+                </button>
+            </div>
+
+            <!-- 计时器模式选择 -->
+            <div class="timer-modes" role="tablist" aria-label="计时器模式">
+                <button
+                    class="mode-btn mode-btn-active"
+                    role="tab"
+                    aria-selected="true"
+                    data-mode="pomodoro"
+                    data-shortcut="Alt+1">
+                    <span class="mode-icon">🍅</span>
+                    <span class="mode-label">专注</span>
+                    <span class="mode-time">25分钟</span>
+                </button>
+                <button
+                    class="mode-btn"
+                    role="tab"
+                    aria-selected="false"
+                    data-mode="shortBreak"
+                    data-shortcut="Alt+2">
+                    <span class="mode-icon">☕</span>
+                    <span class="mode-label">短休息</span>
+                    <span class="mode-time">5分钟</span>
+                </button>
+                <button
+                    class="mode-btn"
+                    role="tab"
+                    aria-selected="false"
+                    data-mode="longBreak"
+                    data-shortcut="Alt+3">
+                    <span class="mode-icon">🌴</span>
+                    <span class="mode-label">长休息</span>
+                    <span class="mode-time">15分钟</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 任务列表区域 -->
+        <section id="tasks-section" class="tasks-section" aria-labelledby="tasks-heading">
+            <div class="tasks-header">
+                <h2 id="tasks-heading">任务列表</h2>
+                <button
+                    id="add-task-btn"
+                    class="btn btn-primary"
+                    aria-label="添加新任务"
+                    data-shortcut="Alt+N">
+                    <span class="btn-icon" aria-hidden="true">+</span>
+                    <span class="btn-text">添加任务</span>
+                </button>
+            </div>
+
+            <!-- 任务过滤器 -->
+            <div class="task-filters" role="group" aria-label="任务筛选">
+                <button class="filter-btn filter-btn-active" data-filter="all" aria-pressed="true">
+                    全部 <span class="filter-count" id="count-all">0</span>
+                </button>
+                <button class="filter-btn" data-filter="active" aria-pressed="false">
+                    进行中 <span class="filter-count" id="count-active">0</span>
+                </button>
+                <button class="filter-btn" data-filter="completed" aria-pressed="false">
+                    已完成 <span class="filter-count" id="count-completed">0</span>
+                </button>
+            </div>
+
+            <!-- 任务列表 -->
+            <div id="task-list" class="task-list" role="list" aria-live="polite">
+                <!-- 任务项将通过 JavaScript 动态插入 -->
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-icon" aria-hidden="true">📝</div>
+                    <p>还没有任务</p>
+                    <p class="empty-hint">点击"添加任务"开始使用</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计面板区域 -->
+        <section id="stats-section" class="stats-section" aria-labelledby="stats-heading">
+            <h2 id="stats-heading">今日统计</h2>
+
+            <div class="stats-grid">
+                <!-- 今日番茄钟 -->
+                <article class="stat-card" aria-labelledby="stat-pomodoros-title">
+                    <h3 id="stat-pomodoros-title" class="stat-title">今日番茄</h3>
+                    <div class="stat-value">
+                        <span id="stat-pomodoros-count" class="stat-number">0</span>
+                        <span class="stat-unit">个</span>
+                    </div>
+                    <div class="stat-icon" aria-hidden="true">🍅</div>
+                </article>
+
+                <!-- 专注时长 -->
+                <article class="stat-card" aria-labelledby="stat-focus-title">
+                    <h3 id="stat-focus-title" class="stat-title">专注时长</h3>
+                    <div class="stat-value">
+                        <span id="stat-focus-time" class="stat-number">0</span>
+                        <span class="stat-unit">分钟</span>
+                    </div>
+                    <div class="stat-icon" aria-hidden="true">⏱️</div>
+                </article>
+
+                <!-- 完成任务 -->
+                <article class="stat-card" aria-labelledby="stat-tasks-title">
+                    <h3 id="stat-tasks-title" class="stat-title">完成任务</h3>
+                    <div class="stat-value">
+                        <span id="stat-tasks-count" class="stat-number">0</span>
+                        <span class="stat-unit">项</span>
+                    </div>
+                    <div class="stat-icon" aria-hidden="true">✅</div>
+                </article>
+
+                <!-- 当前目标 -->
+                <article class="stat-card" aria-labelledby="stat-goal-title">
+                    <h3 id="stat-goal-title" class="stat-title">每日目标</h3>
+                    <div class="stat-value">
+                        <span id="stat-goal-progress" class="stat-number">0</span>
+                        <span class="stat-unit">/ <span id="stat-goal-target">8</span></span>
+                    </div>
+                    <div class="stat-icon" aria-hidden="true">🎯</div>
+                </article>
+            </div>
+
+            <!-- 周日历视图 -->
+            <div class="calendar-view" role="region" aria-labelledby="calendar-heading">
+                <h3 id="calendar-heading" class="calendar-title">本周概览</h3>
+                <div id="week-calendar" class="week-calendar">
+                    <!-- 日历项将通过 JavaScript 动态插入 -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 设置对话框 -->
+    <aside
+        id="settings-modal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+        aria-hidden="true">
+        <div class="modal-overlay" tabindex="-1" data-modal-overlay></div>
+        <div class="modal-container" role="document">
+            <div class="modal-header">
+                <h2 id="settings-title" class="modal-title">设置</h2>
+                <button
+                    class="modal-close-btn"
+                    aria-label="关闭设置"
+                    data-modal-close>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- 计时器设置 -->
+                <fieldset class="settings-group">
+                    <legend class="settings-legend">计时器设置</legend>
+
+                    <div class="setting-item">
+                        <label for="pomodoro-duration" class="setting-label">
+                            专注时长（分钟）
+                        </label>
+                        <input
+                            type="number"
+                            id="pomodoro-duration"
+                            class="setting-input"
+                            min="1"
+                            max="60"
+                            value="25"
+                            aria-describedby="pomodoro-duration-hint">
+                        <span id="pomodoro-duration-hint" class="setting-hint">1-60分钟</span>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="short-break-duration" class="setting-label">
+                            短休息时长（分钟）
+                        </label>
+                        <input
+                            type="number"
+                            id="short-break-duration"
+                            class="setting-input"
+                            min="1"
+                            max="30"
+                            value="5">
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="long-break-duration" class="setting-label">
+                            长休息时长（分钟）
+                        </label>
+                        <input
+                            type="number"
+                            id="long-break-duration"
+                            class="setting-input"
+                            min="1"
+                            max="60"
+                            value="15">
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="long-break-interval" class="setting-label">
+                            长休息间隔（番茄数）
+                        </label>
+                        <input
+                            type="number"
+                            id="long-break-interval"
+                            class="setting-input"
+                            min="2"
+                            max="10"
+                            value="4">
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="daily-goal" class="setting-label">
+                            每日目标（番茄数）
+                        </label>
+                        <input
+                            type="number"
+                            id="daily-goal"
+                            class="setting-input"
+                            min="1"
+                            max="20"
+                            value="8">
+                    </div>
+                </fieldset>
+
+                <!-- 通知设置 -->
+                <fieldset class="settings-group">
+                    <legend class="settings-legend">通知设置</legend>
+
+                    <div class="setting-item setting-item-checkbox">
+                        <input
+                            type="checkbox"
+                            id="enable-notifications"
+                            class="setting-checkbox"
+                            checked>
+                        <label for="enable-notifications" class="setting-checkbox-label">
+                            启用浏览器通知
+                        </label>
+                    </div>
+
+                    <div class="setting-item setting-item-checkbox">
+                        <input
+                            type="checkbox"
+                            id="enable-sound"
+                            class="setting-checkbox"
+                            checked>
+                        <label for="enable-sound" class="setting-checkbox-label">
+                            启用提示音
+                        </label>
+                    </div>
+
+                    <div class="setting-item setting-item-checkbox">
+                        <input
+                            type="checkbox"
+                            id="auto-start-breaks"
+                            class="setting-checkbox">
+                        <label for="auto-start-breaks" class="setting-checkbox-label">
+                            自动开始休息
+                        </label>
+                    </div>
+
+                    <div class="setting-item setting-item-checkbox">
+                        <input
+                            type="checkbox"
+                            id="auto-start-pomodoros"
+                            class="setting-checkbox">
+                        <label for="auto-start-pomodoros" class="setting-checkbox-label">
+                            自动开始专注
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- 主题设置 -->
+                <fieldset class="settings-group">
+                    <legend class="settings-legend">外观设置</legend>
+
+                    <div class="setting-item">
+                        <label for="theme-select" class="setting-label">主题</label>
+                        <select id="theme-select" class="setting-select">
+                            <option value="light">浅色</option>
+                            <option value="dark">深色</option>
+                            <option value="auto">跟随系统</option>
+                        </select>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-modal-cancel>取消</button>
+                <button class="btn btn-primary" data-modal-confirm>保存设置</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 添加/编辑任务对话框 -->
+    <aside
+        id="task-modal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="task-modal-title"
+        aria-hidden="true">
+        <div class="modal-overlay" tabindex="-1" data-modal-overlay></div>
+        <div class="modal-container modal-container-small" role="document">
+            <div class="modal-header">
+                <h2 id="task-modal-title" class="modal-title">添加任务</h2>
+                <button
+                    class="modal-close-btn"
+                    aria-label="关闭对话框"
+                    data-modal-close>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="task-form" class="task-form">
+                <div class="form-group">
+                    <label for="task-title" class="form-label">
+                        任务标题 <span class="required" aria-label="必填">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="task-title"
+                        class="form-input"
+                        placeholder="输入任务标题"
+                        required
+                        aria-required="true"
+                        maxlength="100">
+                    <span class="form-hint">最多 100 个字符</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="task-description" class="form-label">任务描述</label>
+                    <textarea
+                        id="task-description"
+                        class="form-textarea"
+                        placeholder="添加任务描述（可选）"
+                        rows="3"
+                        maxlength="500"></textarea>
+                    <span class="form-hint">最多 500 个字符</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="task-pomodoros" class="form-label">预计番茄数</label>
+                    <input
+                        type="number"
+                        id="task-pomodoros"
+                        class="form-input"
+                        min="1"
+                        max="20"
+                        value="1"
+                        aria-describedby="task-pomodoros-hint">
+                    <span id="task-pomodoros-hint" class="form-hint">1-20 个番茄</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="task-priority" class="form-label">优先级</label>
+                    <select id="task-priority" class="form-select">
+                        <option value="low">低</option>
+                        <option value="medium" selected>中</option>
+                        <option value="high">高</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal-cancel>取消</button>
+                    <button type="submit" class="btn btn-primary">保存任务</button>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Toast 通知容器 -->
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- 键盘快捷键帮助 -->
+    <dialog id="shortcuts-dialog" class="shortcuts-dialog">
+        <div class="shortcuts-content">
+            <h2>键盘快捷键</h2>
+            <dl class="shortcuts-list">
+                <div class="shortcut-item">
+                    <dt><kbd>Space</kbd></dt>
+                    <dd>开始/暂停计时器</dd>
+                </div>
+                <div class="shortcut-item">
+                    <dt><kbd>Alt</kbd> + <kbd>R</kbd></dt>
+                    <dd>重置计时器</dd>
+                </div>
+                <div class="shortcut-item">
+                    <dt><kbd>Alt</kbd> + <kbd>S</kbd></dt>
+                    <dd>打开设置</dd>
+                </div>
+                <div class="shortcut-item">
+                    <dt><kbd>Alt</kbd> + <kbd>N</kbd></dt>
+                    <dd>添加新任务</dd>
+                </div>
+                <div class="shortcut-item">
+                    <dt><kbd>Alt</kbd> + <kbd>1/2/3</kbd></dt>
+                    <dd>切换计时器模式</dd>
+                </div>
+                <div class="shortcut-item">
+                    <dt><kbd>Esc</kbd></dt>
+                    <dd>关闭对话框</dd>
+                </div>
+            </dl>
+            <button id="close-shortcuts" class="btn btn-primary">关闭</button>
+        </div>
+    </dialog>
+
+    <script type="module" src="src/main.ts"></script>
+</body>
+</html>
