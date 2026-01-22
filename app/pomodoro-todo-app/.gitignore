@@ -1,27 +1,30 @@
 # Dependencies
 node_modules/
+package-lock.json
 
-# Build output
+# Build outputs
 dist/
+build/
+*.tsbuildinfo
 
-# IDE
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
-.DS_Store
-Thumbs.db
-
 # Logs
+logs/
 *.log
 npm-debug.log*
-
-# Environment
-.env
-.env.local
+yarn-debug.log*
+yarn-error.log*
 
 # Testing
 coverage/
@@ -30,3 +33,26 @@ coverage/
 # Temporary files
 *.tmp
 .temp/
+.cache/
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
