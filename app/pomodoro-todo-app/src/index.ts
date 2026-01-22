@@ -5,20 +5,23 @@
  */
 
 // Types
-export * from './types';
+export * from './types/index';
 
 // Timer core
 export { PomodoroTimer, createPomodoroTimer } from './services/timer';
 
 // Timer controller
-export { TimerController, createTimerController } from './services/timerController';
+export {
+  TimerController,
+  createTimerController,
+} from './services/timerController';
 
 // Audio manager
 export {
   AudioManager,
   getAudioManager,
   resetAudioManager,
-  SoundType
+  SoundType,
 } from './services/audioManager';
 
 // Notification manager
@@ -28,7 +31,7 @@ export {
   resetNotificationManager,
   requestNotificationPermission,
   checkNotificationPermission,
-  NotificationAction
+  NotificationAction,
 } from './services/notificationManager';
 
 // Storage service
@@ -39,7 +42,7 @@ export {
   getStorageService,
   createTask,
   createSession,
-  StorageError
+  StorageError,
 } from './services/storage';
 
 // Utilities
@@ -60,8 +63,14 @@ export {
   parseTimeString,
   getEndOfDay,
   getStartOfDay,
-  formatTimeWithHours
+  formatTimeWithHours,
 } from './utils/timeFormat';
 
 // Convenience exports
-export { TimerState, SessionType, TaskPriority, TaskStatus, TimerEventType } from './types';
+export {
+  TimerState,
+  SessionType,
+  TaskPriority,
+  TaskStatus,
+  TimerEventType,
+} from './types/index';

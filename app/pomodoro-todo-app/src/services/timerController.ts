@@ -4,7 +4,15 @@
  */
 
 import { PomodoroTimer } from './timer';
-import { IStorageService, Session, SessionType, Task, TimerEvent, TimerEventType, TimerSettings } from '../types';
+import {
+  IStorageService,
+  Session,
+  SessionType,
+  Task,
+  TimerEvent,
+  TimerEventType,
+  TimerSettings,
+} from '../types/index';
 import { getAudioManager, AudioManager } from './audioManager';
 import { NotificationManager } from './notificationManager';
 import { v4 as uuidv4 } from 'uuid';
@@ -55,7 +63,8 @@ export class TimerController {
   constructor(options: TimerControllerOptions) {
     this.storage = options.storage;
     this.audioManager = options.audioManager ?? getAudioManager();
-    this.notificationManager = options.notificationManager ?? new NotificationManager();
+    this.notificationManager =
+      options.notificationManager ?? new NotificationManager();
     this.currentSessionStartTime = null;
     this.isDisposed = false;
     this.unsubscribeFromEvents = null;
@@ -256,7 +265,10 @@ export class TimerController {
   /**
    * Send notification only if document is hidden
    */
-  private async sendNotificationIfNeeded(title: string, message: string): Promise<void> {
+  private async sendNotificationIfNeeded(
+    title: string,
+    message: string
+  ): Promise<void> {
     if (!this.timer.getSettings().notificationEnabled) {
       return;
     }
@@ -305,7 +317,10 @@ export class TimerController {
   /**
    * Send completion notification based on session type
    */
-  private async sendCompletionNotification(sessionType: SessionType | undefined, session: Session): Promise<void> {
+  private async sendCompletionNotification(
+    sessionType: SessionType | undefined,
+    session: Session
+  ): Promise<void> {
     if (!this.timer.getSettings().notificationEnabled) {
       return;
     }
@@ -329,14 +344,17 @@ export class TimerController {
   /**
    * Handle auto-start behavior after session completion
    */
-  private async handleAutoStart(completedSessionType: SessionType | undefined): Promise<void> {
+  private async handleAutoStart(
+    completedSessionType: SessionType | undefined
+  ): Promise<void> {
     const settings = this.timer.getSettings();
 
     if (completedSessionType === SessionType.WORK && settings.autoStartBreak) {
       // Auto-start break
       await this.autoStartBreak();
     } else if (
-      (completedSessionType === SessionType.SHORT_BREAK || completedSessionType === SessionType.LONG_BREAK) &&
+      (completedSessionType === SessionType.SHORT_BREAK ||
+        completedSessionType === SessionType.LONG_BREAK) &&
       settings.autoStartWork
     ) {
       // Auto-start next work session
@@ -352,7 +370,10 @@ export class TimerController {
    * @param task - Task to associate with this work session
    * @param customDuration - Optional custom duration in seconds
    */
-  public async startWorkSession(task: Task, customDuration?: number): Promise<void> {
+  public async startWorkSession(
+    task: Task,
+    customDuration?: number
+  ): Promise<void> {
     this.timer.setCurrentTask(task);
     await this.timer.start('work', task, customDuration);
   }
@@ -418,7 +439,10 @@ export class TimerController {
    * Complete current pomodoro and record session
    */
   public async completePomodoro(): Promise<void> {
-    if (this.timer.getState() !== 'working' && this.timer.getState() !== 'paused') {
+    if (
+      this.timer.getState() !== 'working' &&
+      this.timer.getState() !== 'paused'
+    ) {
       throw new Error('No active work session to complete');
     }
 
@@ -432,7 +456,10 @@ export class TimerController {
   /**
    * Record the current session to storage
    */
-  private async recordSession(wasCompleted: boolean, wasSkipped: boolean): Promise<Session | null> {
+  private async recordSession(
+    wasCompleted: boolean,
+    wasSkipped: boolean
+  ): Promise<Session | null> {
     const sessionData = this.timer.getSessionData();
 
     if (!sessionData) {
@@ -454,14 +481,18 @@ export class TimerController {
       startedAt: sessionData.startedAt,
       completedAt,
       wasCompleted,
-      wasSkipped
+      wasSkipped,
     };
 
     try {
       await this.storage.saveSession(session);
 
       // Update task's completed pomodoros if work session was completed
-      if (sessionData.type === SessionType.WORK && wasCompleted && currentTask) {
+      if (
+        sessionData.type === SessionType.WORK &&
+        wasCompleted &&
+        currentTask
+      ) {
         currentTask.completedPomodoros++;
         await this.storage.saveTask(currentTask);
       }
@@ -654,7 +685,7 @@ export async function createTimerController(
 ): Promise<TimerController> {
   const controller = new TimerController({
     storage,
-    ...options
+    ...options,
   });
 
   return controller;

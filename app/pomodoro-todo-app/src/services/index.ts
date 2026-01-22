@@ -160,13 +160,10 @@ export {
   KeyboardShortcutManager,
   DefaultShortcuts,
   getKeyboardManager,
-  destroyKeyboardManager
+  destroyKeyboardManager,
 } from './keyboard.js';
 
-export {
-  AutoSaveManager,
-  createAutoSaveManager
-} from './autoSave.js';
+export { AutoSaveManager, createAutoSaveManager } from './autoSave.js';
 
 export type {
   ShortcutKey,
@@ -177,5 +174,5 @@ export type {
   SaveResult,
   AutoSaveEvent,
   AutoSaveEventListener,
-  AutoSaveStats
+  AutoSaveStats,
 } from '../types/index.js';

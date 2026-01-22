@@ -10,7 +10,10 @@ import { Task, Session, Settings, Tag } from '../types/index';
  * @param task 任务对象
  * @returns 验证结果
  */
-export function validateTask(task: Partial<Task>): { valid: boolean; errors: string[] } {
+export function validateTask(task: Partial<Task>): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   // 验证必填字段
@@ -37,11 +40,17 @@ export function validateTask(task: Partial<Task>): { valid: boolean; errors: str
   }
 
   // 验证番茄数
-  if (task.estimatedPomodoros !== undefined && (task.estimatedPomodoros < 0 || task.estimatedPomodoros > 100)) {
+  if (
+    task.estimatedPomodoros !== undefined &&
+    (task.estimatedPomodoros < 0 || task.estimatedPomodoros > 100)
+  ) {
     errors.push('预估番茄数必须在0-100之间');
   }
 
-  if (task.actualPomodoros !== undefined && (task.actualPomodoros < 0 || task.actualPomodoros > 1000)) {
+  if (
+    task.actualPomodoros !== undefined &&
+    (task.actualPomodoros < 0 || task.actualPomodoros > 1000)
+  ) {
     errors.push('实际番茄数必须在0-1000之间');
   }
 
@@ -52,7 +61,7 @@ export function validateTask(task: Partial<Task>): { valid: boolean; errors: str
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -61,16 +70,25 @@ export function validateTask(task: Partial<Task>): { valid: boolean; errors: str
  * @param session 会话对象
  * @returns 验证结果
  */
-export function validateSession(session: Partial<Session>): { valid: boolean; errors: string[] } {
+export function validateSession(session: Partial<Session>): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   // 验证会话类型
-  if (session.type && !['work', 'short_break', 'long_break'].includes(session.type)) {
+  if (
+    session.type &&
+    !['work', 'short_break', 'long_break'].includes(session.type)
+  ) {
     errors.push('无效的会话类型');
   }
 
   // 验证时长
-  if (session.plannedDuration !== undefined && (session.plannedDuration <= 0 || session.plannedDuration > 120)) {
+  if (
+    session.plannedDuration !== undefined &&
+    (session.plannedDuration <= 0 || session.plannedDuration > 120)
+  ) {
     errors.push('计划时长必须在1-120分钟之间');
   }
 
@@ -83,13 +101,17 @@ export function validateSession(session: Partial<Session>): { valid: boolean; er
     errors.push('开始时间不能晚于当前时间');
   }
 
-  if (session.endTime && session.startTime && session.endTime < session.startTime) {
+  if (
+    session.endTime &&
+    session.startTime &&
+    session.endTime < session.startTime
+  ) {
     errors.push('结束时间不能早于开始时间');
   }
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -98,29 +120,47 @@ export function validateSession(session: Partial<Session>): { valid: boolean; er
  * @param settings 设置对象
  * @returns 验证结果
  */
-export function validateSettings(settings: Partial<Settings>): { valid: boolean; errors: string[] } {
+export function validateSettings(settings: Partial<Settings>): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   // 验证番茄钟时长
-  if (settings.workDuration !== undefined && (settings.workDuration < 1 || settings.workDuration > 60)) {
+  if (
+    settings.workDuration !== undefined &&
+    (settings.workDuration < 1 || settings.workDuration > 60)
+  ) {
     errors.push('工作时长必须在1-60分钟之间');
   }
 
-  if (settings.shortBreakDuration !== undefined && (settings.shortBreakDuration < 1 || settings.shortBreakDuration > 30)) {
+  if (
+    settings.shortBreakDuration !== undefined &&
+    (settings.shortBreakDuration < 1 || settings.shortBreakDuration > 30)
+  ) {
     errors.push('短休息时长必须在1-30分钟之间');
   }
 
-  if (settings.longBreakDuration !== undefined && (settings.longBreakDuration < 1 || settings.longBreakDuration > 60)) {
+  if (
+    settings.longBreakDuration !== undefined &&
+    (settings.longBreakDuration < 1 || settings.longBreakDuration > 60)
+  ) {
     errors.push('长休息时长必须在1-60分钟之间');
   }
 
   // 验证长休息间隔
-  if (settings.longBreakInterval !== undefined && (settings.longBreakInterval < 2 || settings.longBreakInterval > 10)) {
+  if (
+    settings.longBreakInterval !== undefined &&
+    (settings.longBreakInterval < 2 || settings.longBreakInterval > 10)
+  ) {
     errors.push('长休息间隔必须在2-10之间');
   }
 
   // 验证每日目标
-  if (settings.dailyGoal !== undefined && (settings.dailyGoal < 1 || settings.dailyGoal > 20)) {
+  if (
+    settings.dailyGoal !== undefined &&
+    (settings.dailyGoal < 1 || settings.dailyGoal > 20)
+  ) {
     errors.push('每日目标必须在1-20之间');
   }
 
@@ -131,7 +171,7 @@ export function validateSettings(settings: Partial<Settings>): { valid: boolean;
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -140,7 +180,10 @@ export function validateSettings(settings: Partial<Settings>): { valid: boolean;
  * @param tag 标签对象
  * @returns 验证结果
  */
-export function validateTag(tag: Partial<Tag>): { valid: boolean; errors: string[] } {
+export function validateTag(tag: Partial<Tag>): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   // 验证名称
@@ -159,7 +202,7 @@ export function validateTag(tag: Partial<Tag>): { valid: boolean; errors: string
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 

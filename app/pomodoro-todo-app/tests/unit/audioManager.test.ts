@@ -3,7 +3,11 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { AudioManager, SoundType, resetAudioManager } from '../../src/services/audioManager';
+import {
+  AudioManager,
+  SoundType,
+  resetAudioManager,
+} from '../../src/services/audioManager';
 
 // Mock Audio class
 class MockAudio {
@@ -25,7 +29,11 @@ class MockAudio {
     this.preload = 'auto';
   }
 
-  addEventListener(event: string, callback: () => void, options?: { once: boolean }): void {
+  addEventListener(
+    event: string,
+    callback: () => void,
+    options?: { once: boolean }
+  ): void {
     if (event === 'canplaythrough') {
       this.canPlayThroughCallbacks.push(callback);
       // Simulate audio loaded
@@ -42,10 +50,12 @@ class MockAudio {
 
   removeEventListener(event: string, callback: () => void): void {
     if (event === 'canplaythrough') {
-      this.canPlayThroughCallbacks = this.canPlayThroughCallbacks.filter(cb => cb !== callback);
+      this.canPlayThroughCallbacks = this.canPlayThroughCallbacks.filter(
+        (cb) => cb !== callback
+      );
     }
     if (event === 'error') {
-      this.errorCallbacks = this.errorCallbacks.filter(cb => cb !== callback);
+      this.errorCallbacks = this.errorCallbacks.filter((cb) => cb !== callback);
     }
   }
 
@@ -94,16 +104,16 @@ describe('AudioManager', () => {
         connect: vi.fn(),
         frequency: { value: 0 },
         start: vi.fn(),
-        stop: vi.fn()
+        stop: vi.fn(),
       })),
       createGain: vi.fn(() => ({
         connect: vi.fn(),
         gain: {
           setValueAtTime: vi.fn(),
-          exponentialRampToValueAtTime: vi.fn()
-        }
+          exponentialRampToValueAtTime: vi.fn(),
+        },
       })),
-      destination: {}
+      destination: {},
     }));
 
     audioManager = new AudioManager();
@@ -195,7 +205,9 @@ describe('AudioManager', () => {
 
   describe('Sound loading', () => {
     it('should load custom sound', () => {
-      expect(() => audioManager.loadSound(SoundType.START, '/custom/start.mp3')).not.toThrow();
+      expect(() =>
+        audioManager.loadSound(SoundType.START, '/custom/start.mp3')
+      ).not.toThrow();
     });
 
     it('should check if sound is loaded', () => {
@@ -223,7 +235,12 @@ describe('AudioManager', () => {
     });
 
     it('should play beep sequence', () => {
-      expect(() => audioManager.playBeepSequence([[800, 0.1], [600, 0.1]])).not.toThrow();
+      expect(() =>
+        audioManager.playBeepSequence([
+          [800, 0.1],
+          [600, 0.1],
+        ])
+      ).not.toThrow();
     });
 
     it('should not play beep when muted', () => {

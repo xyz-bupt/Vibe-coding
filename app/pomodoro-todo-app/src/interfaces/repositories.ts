@@ -3,7 +3,16 @@
  * 定义数据访问层的抽象接口，遵循仓储模式（Repository Pattern）
  */
 
-import { Task, Session, Settings, Statistics, Tag, TaskStatus, TaskFilter, DailyStats } from '../types/index';
+import {
+  Task,
+  Session,
+  Settings,
+  Statistics,
+  Tag,
+  TaskStatus,
+  TaskFilter,
+  DailyStats,
+} from '../types/index';
 
 /**
  * 任务仓储接口

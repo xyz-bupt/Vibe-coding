@@ -3,27 +3,38 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { NotificationManager, NotificationAction, resetNotificationManager } from '../../src/services/notificationManager';
+import {
+  NotificationManager,
+  NotificationAction,
+  resetNotificationManager,
+} from '../../src/services/notificationManager';
 
 // Mock Notification API
-const mockNotifications: Array<{ title: string; options: NotificationOptions }> = [];
+const mockNotifications: Array<{
+  title: string;
+  options: NotificationOptions;
+}> = [];
 
-const mockNotification = vi.fn().mockImplementation((title: string, options: NotificationOptions) => {
-  const notification = {
-    title,
-    body: options.body || '',
-    icon: options.icon || '',
-    tag: options.tag || '',
-    close: vi.fn(),
-    onclick: null as ((this: Notification, event: Event) => any) | null
-  };
-  mockNotifications.push({ title, options });
-  return notification;
-});
+const mockNotification = vi
+  .fn()
+  .mockImplementation((title: string, options: NotificationOptions) => {
+    const notification = {
+      title,
+      body: options.body || '',
+      icon: options.icon || '',
+      tag: options.tag || '',
+      close: vi.fn(),
+      onclick: null as ((this: Notification, event: Event) => any) | null,
+    };
+    mockNotifications.push({ title, options });
+    return notification;
+  });
 
 mockNotification.permission = 'granted' as NotificationPermission;
 
-const mockRequestPermission = vi.fn().mockResolvedValue('granted' as NotificationPermission);
+const mockRequestPermission = vi
+  .fn()
+  .mockResolvedValue('granted' as NotificationPermission);
 
 describe('NotificationManager', () => {
   let notificationManager: NotificationManager;
@@ -68,7 +79,9 @@ describe('NotificationManager', () => {
   describe('Permission requests', () => {
     it('should request notification permission', async () => {
       mockNotification.permission = 'default';
-      (Notification as any).requestPermission = vi.fn().mockResolvedValue('granted');
+      (Notification as any).requestPermission = vi
+        .fn()
+        .mockResolvedValue('granted');
 
       const granted = await notificationManager.requestPermission();
 
@@ -78,7 +91,9 @@ describe('NotificationManager', () => {
 
     it('should handle denied permission', async () => {
       mockNotification.permission = 'default';
-      (Notification as any).requestPermission = vi.fn().mockResolvedValue('denied');
+      (Notification as any).requestPermission = vi
+        .fn()
+        .mockResolvedValue('denied');
 
       const granted = await notificationManager.requestPermission();
 
@@ -112,7 +127,7 @@ describe('NotificationManager', () => {
 
     it('should send notification with custom options', async () => {
       await notificationManager.send('Test', 'Body', {
-        tag: 'test-tag'
+        tag: 'test-tag',
       });
 
       expect(mockNotifications[0].options.tag).toBe('test-tag');
@@ -185,7 +200,7 @@ describe('NotificationManager', () => {
   describe('Configuration', () => {
     it('should update configuration', () => {
       notificationManager.updateConfig({
-        requireInteraction: false
+        requireInteraction: false,
       });
 
       // Config should be updated (verified by sending notification)

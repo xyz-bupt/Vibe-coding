@@ -3,8 +3,19 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { InMemoryStorageService, createTask, createSession, StorageError } from '../../src/services/storage';
-import { Task, Session, TaskPriority, TaskStatus, SessionType } from '../../src/types';
+import {
+  InMemoryStorageService,
+  createTask,
+  createSession,
+  StorageError,
+} from '../../src/services/storage';
+import {
+  Task,
+  Session,
+  TaskPriority,
+  TaskStatus,
+  SessionType,
+} from '../../src/types';
 
 describe('InMemoryStorageService', () => {
   let storage: InMemoryStorageService;
@@ -33,7 +44,7 @@ describe('InMemoryStorageService', () => {
         estimatedPomodoros: 2,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await storage.saveTask(task);
@@ -51,7 +62,7 @@ describe('InMemoryStorageService', () => {
         status: TaskStatus.TODO,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await storage.saveTask(task);
@@ -73,7 +84,7 @@ describe('InMemoryStorageService', () => {
         status: TaskStatus.TODO,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await storage.saveTask(task);
@@ -91,7 +102,7 @@ describe('InMemoryStorageService', () => {
         status: TaskStatus.TODO,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await storage.saveTask(task);
@@ -122,7 +133,7 @@ describe('InMemoryStorageService', () => {
         startedAt: Date.now(),
         completedAt: Date.now() + 1500000,
         wasCompleted: true,
-        wasSkipped: false
+        wasSkipped: false,
       };
 
       await storage.saveSession(session);
@@ -142,7 +153,7 @@ describe('InMemoryStorageService', () => {
         startedAt: Date.now(),
         completedAt: Date.now() + 1500000,
         wasCompleted: true,
-        wasSkipped: false
+        wasSkipped: false,
       };
 
       const session2: Session = {
@@ -154,7 +165,7 @@ describe('InMemoryStorageService', () => {
         startedAt: Date.now(),
         completedAt: Date.now() + 1500000,
         wasCompleted: true,
-        wasSkipped: false
+        wasSkipped: false,
       };
 
       await storage.saveSession(session1);
@@ -177,7 +188,7 @@ describe('InMemoryStorageService', () => {
         startedAt: now - 2000000,
         completedAt: now - 500000,
         wasCompleted: true,
-        wasSkipped: false
+        wasSkipped: false,
       };
 
       const session2: Session = {
@@ -189,7 +200,7 @@ describe('InMemoryStorageService', () => {
         startedAt: now + 500000,
         completedAt: now + 2000000,
         wasCompleted: true,
-        wasSkipped: false
+        wasSkipped: false,
       };
 
       await storage.saveSession(session1);
@@ -197,7 +208,10 @@ describe('InMemoryStorageService', () => {
 
       // Query for recent sessions
       const range = now - 1000000;
-      const sessions = await storage.getSessionsByDateRange(range, now + 3000000);
+      const sessions = await storage.getSessionsByDateRange(
+        range,
+        now + 3000000
+      );
 
       expect(sessions).toHaveLength(1);
       expect(sessions[0].id).toBe('session-2');
@@ -216,7 +230,7 @@ describe('InMemoryStorageService', () => {
           startedAt: now - (5 - i) * 1000000,
           completedAt: now - (5 - i) * 1000000 + 1500000,
           wasCompleted: true,
-          wasSkipped: false
+          wasSkipped: false,
         };
         await storage.saveSession(session);
       }
@@ -253,7 +267,7 @@ describe('InMemoryStorageService', () => {
       await storage.saveSettings({
         workDuration: 1800,
         volume: 0.5,
-        autoStartBreak: true
+        autoStartBreak: true,
       });
 
       const settings = await storage.getSettings();
@@ -271,7 +285,7 @@ describe('InMemoryStorageService', () => {
         totalWorkTime: 14400,
         totalBreakTime: 3600,
         completedTasks: 3,
-        longestStreak: 4
+        longestStreak: 4,
       };
 
       await storage.saveDailyStats(stats);
@@ -295,7 +309,7 @@ describe('InMemoryStorageService', () => {
         status: TaskStatus.TODO,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await storage.saveTask(task);
@@ -322,7 +336,7 @@ describe('createTask factory', () => {
     const task = createTask({
       title: 'Custom Task',
       priority: TaskPriority.HIGH,
-      estimatedPomodoros: 4
+      estimatedPomodoros: 4,
     });
 
     expect(task.title).toBe('Custom Task');
@@ -345,7 +359,7 @@ describe('createSession factory', () => {
     const session = createSession({
       type: SessionType.SHORT_BREAK,
       duration: 300,
-      taskId: 'task-1'
+      taskId: 'task-1',
     });
 
     expect(session.type).toBe(SessionType.SHORT_BREAK);

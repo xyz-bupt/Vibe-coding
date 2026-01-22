@@ -166,7 +166,9 @@ export class MigrationManager {
       };
     }
 
-    logger.info(`Starting migration from v${currentVersion} to v${CURRENT_VERSION}`);
+    logger.info(
+      `Starting migration from v${currentVersion} to v${CURRENT_VERSION}`
+    );
 
     // Ensure migration history store exists
     await this.ensureHistoryStore(db);
@@ -200,7 +202,9 @@ export class MigrationManager {
       };
 
       try {
-        logger.info(`Applying migration: ${migration.name} (v${migration.version})`);
+        logger.info(
+          `Applying migration: ${migration.name} (v${migration.version})`
+        );
 
         const migrationStart = Date.now();
 
@@ -211,7 +215,9 @@ export class MigrationManager {
         record.state = MigrationState.COMPLETED;
 
         logger.progress(
-          ((migration.version - currentVersion) / (CURRENT_VERSION - currentVersion)) * 100,
+          ((migration.version - currentVersion) /
+            (CURRENT_VERSION - currentVersion)) *
+            100,
           `Completed: ${migration.name}`
         );
 
@@ -238,7 +244,9 @@ export class MigrationManager {
       }
     }
 
-    logger.info(`Migration completed successfully in ${Date.now() - startTime}ms`);
+    logger.info(
+      `Migration completed successfully in ${Date.now() - startTime}ms`
+    );
 
     return {
       success: true,
@@ -360,10 +368,12 @@ export class MigrationManager {
       };
 
       request.onerror = () => {
-        reject(new MigrationError(
-          'Failed to read migration history',
-          request.error || undefined
-        ));
+        reject(
+          new MigrationError(
+            'Failed to read migration history',
+            request.error || undefined
+          )
+        );
       };
     });
   }
@@ -381,12 +391,13 @@ export class MigrationManager {
       const request = store.put(record);
 
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(
-        new MigrationError(
-          'Failed to save migration record',
-          request.error || undefined
-        )
-      );
+      request.onerror = () =>
+        reject(
+          new MigrationError(
+            'Failed to save migration record',
+            request.error || undefined
+          )
+        );
     });
   }
 
@@ -413,12 +424,13 @@ export class MigrationManager {
         resolve();
       };
 
-      tx.onerror = () => reject(
-        new MigrationError(
-          'Failed to create migration history store',
-          tx.error || undefined
-        )
-      );
+      tx.onerror = () =>
+        reject(
+          new MigrationError(
+            'Failed to create migration history store',
+            tx.error || undefined
+          )
+        );
     });
   }
 
@@ -525,12 +537,13 @@ export async function renameObjectStore(
       } else {
         // All records collected, now insert into new store
         const newStoreTx = transaction.objectStore(newName);
-        const putPromises = records.map((record) =>
-          new Promise<void>((putResolve, putReject) => {
-            const putReq = newStoreTx.put(record);
-            putReq.onsuccess = () => putResolve();
-            putReq.onerror = () => putReject(putReq.error);
-          })
+        const putPromises = records.map(
+          (record) =>
+            new Promise<void>((putResolve, putReject) => {
+              const putReq = newStoreTx.put(record);
+              putReq.onsuccess = () => putResolve();
+              putReq.onerror = () => putReject(putReq.error);
+            })
         );
 
         Promise.all(putPromises)
@@ -594,12 +607,13 @@ export async function migrateData<T, R = T>(
         cursor.continue();
       } else {
         // Apply all updates
-        const putPromises = updates.map(({ key, value }) =>
-          new Promise<void>((putResolve, putReject) => {
-            const putReq = store.put(value);
-            putReq.onsuccess = () => putResolve();
-            putReq.onerror = () => putReject(putReq.error);
-          })
+        const putPromises = updates.map(
+          ({ key, value }) =>
+            new Promise<void>((putResolve, putReject) => {
+              const putReq = store.put(value);
+              putReq.onsuccess = () => putResolve();
+              putReq.onerror = () => putReject(putReq.error);
+            })
         );
 
         Promise.all(putPromises)
@@ -641,7 +655,9 @@ export async function validateData<T>(
           }
         } catch (error) {
           invalid++;
-          errors.push(`Validation error at key ${cursor.primaryKey}: ${(error as Error).message}`);
+          errors.push(
+            `Validation error at key ${cursor.primaryKey}: ${(error as Error).message}`
+          );
         }
         cursor.continue();
       } else {
@@ -789,10 +805,7 @@ export async function runMigrations(
       const db = (event.target as IDBOpenDBRequest).result;
       const oldVersion = event.oldVersion;
 
-      migrationManager
-        .migrate(db, oldVersion)
-        .then(resolve)
-        .catch(reject);
+      migrationManager.migrate(db, oldVersion).then(resolve).catch(reject);
     };
 
     request.onsuccess = () => {
@@ -807,10 +820,12 @@ export async function runMigrations(
     };
 
     request.onerror = () => {
-      reject(new MigrationError(
-        'Failed to open database for migration',
-        request.error || undefined
-      ));
+      reject(
+        new MigrationError(
+          'Failed to open database for migration',
+          request.error || undefined
+        )
+      );
     };
   });
 }

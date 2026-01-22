@@ -20,7 +20,7 @@ export enum AutoSaveStatus {
   SCHEDULED = 'scheduled',
   SAVING = 'saving',
   SUCCESS = 'success',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 /**
@@ -87,7 +87,7 @@ export class AutoSaveManager {
     failedSaves: 0,
     lastSaveTime: null,
     lastSaveError: null,
-    averageSaveTime: 0
+    averageSaveTime: 0,
   };
 
   // Save timing tracking
@@ -110,7 +110,7 @@ export class AutoSaveManager {
       enabled: config.enabled ?? true,
       debounceMs: config.debounceMs ?? 2000,
       onSave: config.onSave ?? (() => {}),
-      onError: config.onError ?? (() => {})
+      onError: config.onError ?? (() => {}),
     };
   }
 
@@ -127,7 +127,9 @@ export class AutoSaveManager {
     }
 
     // Subscribe to store changes
-    this.unsubscribeStore = this.store.subscribe(this.handleStateChange.bind(this));
+    this.unsubscribeStore = this.store.subscribe(
+      this.handleStateChange.bind(this)
+    );
 
     // Setup periodic save
     this.startPeriodicSave();
@@ -259,7 +261,7 @@ export class AutoSaveManager {
         version: this.getVersion(),
         timestamp: startTime,
         checksum,
-        state: serialized
+        state: serialized,
       };
 
       // Save to storage
@@ -281,7 +283,7 @@ export class AutoSaveManager {
       this.status = AutoSaveStatus.SUCCESS;
       this.notifyListeners({
         status: this.status,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       // Reset to idle after a delay
@@ -292,7 +294,6 @@ export class AutoSaveManager {
       }, 1000);
 
       return { success: true, timestamp: Date.now() };
-
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
 
@@ -306,7 +307,7 @@ export class AutoSaveManager {
       this.notifyListeners({
         status: this.status,
         timestamp: Date.now(),
-        error: err
+        error: err,
       });
 
       // Schedule retry
@@ -403,7 +404,10 @@ export class AutoSaveManager {
    * Remove visibility change handlers
    */
   private removeVisibilityHandlers(): void {
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    document.removeEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange
+    );
   }
 
   /**
@@ -444,7 +448,7 @@ export class AutoSaveManager {
         version: this.getVersion(),
         timestamp: Date.now(),
         checksum,
-        state: serialized
+        state: serialized,
       };
 
       // Use synchronous storage for unload
@@ -474,7 +478,9 @@ export class AutoSaveManager {
       // Verify checksum
       const checksum = this.calculateChecksum(data.state);
       if (checksum !== data.checksum) {
-        console.warn('State checksum mismatch, attempting to restore from backup');
+        console.warn(
+          'State checksum mismatch, attempting to restore from backup'
+        );
         return this.restoreFromBackup();
       }
 
@@ -487,7 +493,6 @@ export class AutoSaveManager {
       }
 
       return state;
-
     } catch (error) {
       console.error('Failed to restore state:', error);
       return this.restoreFromBackup();
@@ -514,7 +519,6 @@ export class AutoSaveManager {
       }
 
       return state;
-
     } catch (error) {
       console.error('Failed to restore from backup:', error);
       return null;
@@ -551,7 +555,10 @@ export class AutoSaveManager {
    * Check if there's a pending save
    */
   isPending(): boolean {
-    return this.status === AutoSaveStatus.SCHEDULED || this.status === AutoSaveStatus.SAVING;
+    return (
+      this.status === AutoSaveStatus.SCHEDULED ||
+      this.status === AutoSaveStatus.SAVING
+    );
   }
 
   // ==========================================================================
@@ -573,7 +580,7 @@ export class AutoSaveManager {
    * Notify all listeners
    */
   private notifyListeners(event: AutoSaveEvent): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(event);
       } catch (error) {
@@ -592,7 +599,7 @@ export class AutoSaveManager {
   updateConfig(config: Partial<AutoSaveConfig>): void {
     this.config = {
       ...this.config,
-      ...config
+      ...config,
     };
 
     // Restart if enabled/disabled changed
@@ -623,7 +630,7 @@ export class AutoSaveManager {
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
       const char = data.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash.toString(16);

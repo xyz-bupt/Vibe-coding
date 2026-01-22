@@ -3,7 +3,7 @@
  * Handles all audio feedback for timer events
  */
 
-import { AudioEventType } from '../types';
+import { AudioEventType } from '../types/index';
 
 /**
  * Audio configuration for different notification types
@@ -22,7 +22,7 @@ export enum SoundType {
   COMPLETE = 'complete',
   BREAK_START = 'break_start',
   PAUSE = 'pause',
-  TICK = 'tick'
+  TICK = 'tick',
 }
 
 /**
@@ -33,7 +33,7 @@ const DEFAULT_SOUNDS: Record<SoundType, string> = {
   [SoundType.COMPLETE]: '/sounds/complete.mp3',
   [SoundType.BREAK_START]: '/sounds/break.mp3',
   [SoundType.PAUSE]: '/sounds/pause.mp3',
-  [SoundType.TICK]: '/sounds/tick.mp3'
+  [SoundType.TICK]: '/sounds/tick.mp3',
 };
 
 /**
@@ -43,7 +43,7 @@ enum AudioLoadState {
   IDLE = 'idle',
   LOADING = 'loading',
   LOADED = 'loaded',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 /**
@@ -89,7 +89,8 @@ export class AudioManager {
    */
   private initAudioContext(): AudioContext | null {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass =
+        window.AudioContext || (window as any).webkitAudioContext;
       return AudioContextClass ? new AudioContextClass() : null;
     } catch {
       return null;
@@ -133,17 +134,25 @@ export class AudioManager {
     const audioElement: AudioElement = {
       element: audio,
       state: AudioLoadState.LOADING,
-      config: { src, volume: this.masterVolume }
+      config: { src, volume: this.masterVolume },
     };
 
-    audio.addEventListener('canplaythrough', () => {
-      audioElement.state = AudioLoadState.LOADED;
-    }, { once: true });
+    audio.addEventListener(
+      'canplaythrough',
+      () => {
+        audioElement.state = AudioLoadState.LOADED;
+      },
+      { once: true }
+    );
 
-    audio.addEventListener('error', () => {
-      audioElement.state = AudioLoadState.ERROR;
-      console.warn(`Failed to load audio: ${src}`);
-    }, { once: true });
+    audio.addEventListener(
+      'error',
+      () => {
+        audioElement.state = AudioLoadState.ERROR;
+        console.warn(`Failed to load audio: ${src}`);
+      },
+      { once: true }
+    );
 
     this.audioElements.set(soundType, audioElement);
   }
@@ -172,7 +181,10 @@ export class AudioManager {
     }
 
     const audio = audioWrapper.element;
-    audio.volume = volume !== undefined ? volume * this.masterVolume : this.getEffectiveVolume();
+    audio.volume =
+      volume !== undefined
+        ? volume * this.masterVolume
+        : this.getEffectiveVolume();
 
     // Reset to beginning if already playing
     audio.currentTime = 0;
@@ -397,7 +409,10 @@ export class AudioManager {
       oscillator.frequency.value = frequency;
       oscillator.type = 'sine';
 
-      gainNode.gain.setValueAtTime(this.masterVolume, this.audioContext.currentTime);
+      gainNode.gain.setValueAtTime(
+        this.masterVolume,
+        this.audioContext.currentTime
+      );
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
         this.audioContext.currentTime + duration
@@ -424,9 +439,12 @@ export class AudioManager {
     }
 
     pattern.forEach(([frequency, duration], index) => {
-      setTimeout(() => {
-        this.playBeep(frequency, duration);
-      }, index * (duration * 1000 + interval));
+      setTimeout(
+        () => {
+          this.playBeep(frequency, duration);
+        },
+        index * (duration * 1000 + interval)
+      );
     });
   }
 }

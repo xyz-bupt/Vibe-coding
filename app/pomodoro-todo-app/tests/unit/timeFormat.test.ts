@@ -14,7 +14,7 @@ import {
   minutesToSeconds,
   toISODate,
   parseTimeString,
-  formatTimeWithHours
+  formatTimeWithHours,
 } from '../../src/utils/timeFormat';
 
 describe('formatTime', () => {

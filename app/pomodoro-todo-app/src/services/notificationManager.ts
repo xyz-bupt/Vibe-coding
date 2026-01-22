@@ -11,7 +11,7 @@ export enum NotificationAction {
   SKIP = 'skip',
   PAUSE = 'pause',
   STOP = 'stop',
-  VIEW_TASK = 'view_task'
+  VIEW_TASK = 'view_task',
 }
 
 /**
@@ -38,13 +38,16 @@ const DEFAULT_CONFIG: NotificationConfig = {
   requireInteraction: true,
   silent: false,
   icon: '/icons/timer-icon-192.png',
-  badge: '/icons/badge-icon-72.png'
+  badge: '/icons/badge-icon-72.png',
 };
 
 /**
  * Notification event callback type
  */
-type NotificationCallback = (action: NotificationAction | null, notificationId: string) => void;
+type NotificationCallback = (
+  action: NotificationAction | null,
+  notificationId: string
+) => void;
 
 /**
  * Notification request with callback
@@ -135,7 +138,10 @@ export class NotificationManager {
   /**
    * Handle notification click events
    */
-  private handleNotificationClick(data: { action: NotificationAction | null; notificationId: string }): void {
+  private handleNotificationClick(data: {
+    action: NotificationAction | null;
+    notificationId: string;
+  }): void {
     const request = this.pendingRequests.get(data.notificationId);
     if (request?.callback) {
       request.callback(data.action, data.notificationId);
@@ -241,7 +247,7 @@ export class NotificationManager {
       tag: config.tag || id,
       requireInteractive: config.requireInteraction,
       silent: config.silent,
-      data: config.data
+      data: config.data,
     });
 
     // Setup click handler
@@ -283,7 +289,7 @@ export class NotificationManager {
       requireInteraction: config.requireInteraction,
       silent: config.silent,
       data: { ...config.data, notificationId: id },
-      actions: config.actions
+      actions: config.actions,
     });
   }
 
@@ -311,14 +317,14 @@ export class NotificationManager {
       this.pendingRequests.set(notificationId, {
         id: notificationId,
         timestamp: Date.now(),
-        callback
+        callback,
       });
     }
 
     await this.send(title, body, {
       actions: [actionConfig],
       tag: notificationId,
-      data: { notificationId }
+      data: { notificationId },
     });
   }
 
@@ -342,47 +348,54 @@ export class NotificationManager {
       this.pendingRequests.set(notificationId, {
         id: notificationId,
         timestamp: Date.now(),
-        callback
+        callback,
       });
     }
 
     await this.send(title, body, {
       actions: actionConfigs,
       tag: notificationId,
-      data: { notificationId }
+      data: { notificationId },
     });
   }
 
   /**
    * Get action configuration for a notification action type
    */
-  private getActionConfig(action: NotificationAction): { action: string; title: string; icon?: string } {
-    const configs: Record<NotificationAction, { action: string; title: string; icon?: string }> = {
+  private getActionConfig(action: NotificationAction): {
+    action: string;
+    title: string;
+    icon?: string;
+  } {
+    const configs: Record<
+      NotificationAction,
+      { action: string; title: string; icon?: string }
+    > = {
       [NotificationAction.RESUME]: {
         action: 'resume',
         title: 'Resume',
-        icon: '/icons/resume.png'
+        icon: '/icons/resume.png',
       },
       [NotificationAction.SKIP]: {
         action: 'skip',
         title: 'Skip',
-        icon: '/icons/skip.png'
+        icon: '/icons/skip.png',
       },
       [NotificationAction.PAUSE]: {
         action: 'pause',
         title: 'Pause',
-        icon: '/icons/pause.png'
+        icon: '/icons/pause.png',
       },
       [NotificationAction.STOP]: {
         action: 'stop',
         title: 'Stop',
-        icon: '/icons/stop.png'
+        icon: '/icons/stop.png',
       },
       [NotificationAction.VIEW_TASK]: {
         action: 'view_task',
         title: 'View Task',
-        icon: '/icons/task.png'
-      }
+        icon: '/icons/task.png',
+      },
     };
 
     return configs[action];
@@ -391,18 +404,26 @@ export class NotificationManager {
   /**
    * Send a work session complete notification
    */
-  public async notifyWorkComplete(taskName: string = '', pomodorosCompleted: number = 1): Promise<void> {
+  public async notifyWorkComplete(
+    taskName: string = '',
+    pomodorosCompleted: number = 1
+  ): Promise<void> {
     const title = 'Work session completed!';
     const body = taskName
       ? `Great work on "${taskName}"! (${pomodorosCompleted} pomodoro${pomodorosCompleted > 1 ? 's' : ''})`
       : `Work session complete! (${pomodorosCompleted} pomodoro${pomodorosCompleted > 1 ? 's' : ''})`;
 
-    await this.sendWithAction(title, body, NotificationAction.SKIP, (action) => {
-      if (action === NotificationAction.SKIP) {
-        // Skip to next session
-        window.dispatchEvent(new CustomEvent('skip-timer'));
+    await this.sendWithAction(
+      title,
+      body,
+      NotificationAction.SKIP,
+      (action) => {
+        if (action === NotificationAction.SKIP) {
+          // Skip to next session
+          window.dispatchEvent(new CustomEvent('skip-timer'));
+        }
       }
-    });
+    );
   }
 
   /**
@@ -424,11 +445,16 @@ export class NotificationManager {
     const title = 'Break is over!';
     const body = 'Ready to get back to work?';
 
-    await this.sendWithAction(title, body, NotificationAction.RESUME, (action) => {
-      if (action === NotificationAction.RESUME) {
-        window.dispatchEvent(new CustomEvent('resume-timer'));
+    await this.sendWithAction(
+      title,
+      body,
+      NotificationAction.RESUME,
+      (action) => {
+        if (action === NotificationAction.RESUME) {
+          window.dispatchEvent(new CustomEvent('resume-timer'));
+        }
       }
-    });
+    );
   }
 
   /**
@@ -446,9 +472,11 @@ export class NotificationManager {
    */
   public clearAll(): void {
     if (this.serviceWorkerRegistration) {
-      this.serviceWorkerRegistration.getNotifications().then((notifications) => {
-        notifications.forEach((notification) => notification.close());
-      });
+      this.serviceWorkerRegistration
+        .getNotifications()
+        .then((notifications) => {
+          notifications.forEach((notification) => notification.close());
+        });
     }
 
     this.activeNotifications.forEach((notification) => {

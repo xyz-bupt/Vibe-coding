@@ -175,7 +175,10 @@ export function minutesToSeconds(minutes: number): number {
  * @param from - Base timestamp (defaults to current time)
  * @returns Date object representing the target time
  */
-export function secondsToDate(seconds: number, from: number = Date.now()): Date {
+export function secondsToDate(
+  seconds: number,
+  from: number = Date.now()
+): Date {
   return new Date(from + secondsToMs(seconds));
 }
 
@@ -206,7 +209,7 @@ export function formatTimestamp(
 ): string {
   return new Date(timestamp).toLocaleTimeString(locale || undefined, {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -223,7 +226,7 @@ export function formatDate(
   return new Date(timestamp).toLocaleDateString(locale || undefined, {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 }
 
@@ -246,7 +249,9 @@ export function parseTimeString(timeString: string): number {
   const parts = timeString.split(':').map(Number);
 
   if (parts.length !== 2 || parts.some(isNaN)) {
-    throw new Error(`Invalid time format: ${timeString}. Expected HH:MM or MM:SS`);
+    throw new Error(
+      `Invalid time format: ${timeString}. Expected HH:MM or MM:SS`
+    );
   }
 
   const [major, minor] = parts;

@@ -52,7 +52,11 @@ import {
   STORE_NAMES,
 } from './indexeddb.js';
 
-import { StorageError, QuotaExceededError, TransactionError } from '../types/index.js';
+import {
+  StorageError,
+  QuotaExceededError,
+  TransactionError,
+} from '../types/index.js';
 
 // ============================================================================
 // Constants
@@ -255,7 +259,8 @@ export class StorageService implements IStorageService {
   private memory: InMemoryStorage;
 
   private storageType: StorageType;
-  private eventListeners: Map<StorageEventType, Set<StorageEventListener>> = new Map();
+  private eventListeners: Map<StorageEventType, Set<StorageEventListener>> =
+    new Map();
 
   private initialized = false;
   private initPromise: Promise<void> | null = null;
@@ -298,7 +303,10 @@ export class StorageService implements IStorageService {
 
   private async _init(): Promise<void> {
     // Try IndexedDB first
-    if (IndexedDBClass.isSupported() && !(await IndexedDBClass.isPrivateMode())) {
+    if (
+      IndexedDBClass.isSupported() &&
+      !(await IndexedDBClass.isPrivateMode())
+    ) {
       try {
         await this.db.init();
         this.storageType = StorageType.INDEXED_DB;
@@ -309,7 +317,10 @@ export class StorageService implements IStorageService {
         await this.backupToLocalStorage();
         return;
       } catch (error) {
-        console.warn('[Storage] IndexedDB initialization failed, falling back to LocalStorage:', error);
+        console.warn(
+          '[Storage] IndexedDB initialization failed, falling back to LocalStorage:',
+          error
+        );
       }
     }
 
@@ -328,7 +339,9 @@ export class StorageService implements IStorageService {
     this.storageType = StorageType.MEMORY;
     this.ls.set(LS_KEYS.STORAGE_TYPE, StorageType.MEMORY);
     this.initialized = true;
-    console.warn('[Storage] Using in-memory storage - data will be lost on refresh');
+    console.warn(
+      '[Storage] Using in-memory storage - data will be lost on refresh'
+    );
   }
 
   /**
@@ -442,7 +455,8 @@ export class StorageService implements IStorageService {
     await this.saveTask({
       ...task,
       status,
-      completedAt: status === TaskStatus.COMPLETED ? Date.now() : task.completedAt,
+      completedAt:
+        status === TaskStatus.COMPLETED ? Date.now() : task.completedAt,
     });
   }
 
@@ -491,7 +505,9 @@ export class StorageService implements IStorageService {
     } else {
       const sessions = await this.getSessions();
       return sessions.filter(
-        (s) => (s.startedAt || s.createdAt) >= start && (s.startedAt || s.createdAt) <= end
+        (s) =>
+          (s.startedAt || s.createdAt) >= start &&
+          (s.startedAt || s.createdAt) <= end
       );
     }
   }
@@ -507,7 +523,9 @@ export class StorageService implements IStorageService {
     } else {
       const sessions = await this.getSessions();
       return sessions
-        .sort((a, b) => (b.startedAt || b.createdAt) - (a.startedAt || a.createdAt))
+        .sort(
+          (a, b) => (b.startedAt || b.createdAt) - (a.startedAt || a.createdAt)
+        )
         .slice(0, limit);
     }
   }
@@ -546,7 +564,11 @@ export class StorageService implements IStorageService {
   /**
    * Create and start a new session
    */
-  async startSession(taskId: string | null, type: SessionType, duration: number): Promise<Session> {
+  async startSession(
+    taskId: string | null,
+    type: SessionType,
+    duration: number
+  ): Promise<Session> {
     const session: Session = {
       id: generateId(),
       taskId,
@@ -568,7 +590,10 @@ export class StorageService implements IStorageService {
   /**
    * Complete a session
    */
-  async completeSession(sessionId: string, actualDuration: number): Promise<void> {
+  async completeSession(
+    sessionId: string,
+    actualDuration: number
+  ): Promise<void> {
     if (this.storageType === StorageType.INDEXED_DB) {
       await this.sessionRepo.complete(sessionId, actualDuration);
     } else {
@@ -720,7 +745,8 @@ export class StorageService implements IStorageService {
     if (this.storageType === StorageType.INDEXED_DB) {
       await this.statsRepo.saveDailyStats(stats);
     } else if (this.storageType === StorageType.LOCAL_STORAGE) {
-      const allStats = this.ls.get<Record<string, DailyStats>>('pomodoro_stats') || {};
+      const allStats =
+        this.ls.get<Record<string, DailyStats>>('pomodoro_stats') || {};
       allStats[stats.date] = stats;
       this.ls.set('pomodoro_stats', allStats);
     } else {
@@ -740,12 +766,13 @@ export class StorageService implements IStorageService {
     const monthStart = new Date();
     monthStart.setMonth(monthStart.getMonth() - 1);
 
-    const [todayStats, weekSessions, monthSessions, allSessions] = await Promise.all([
-      this.calculateDailyStats(today),
-      this.getSessionsByDateRange(weekStart.getTime(), Date.now()),
-      this.getSessionsByDateRange(monthStart.getTime(), Date.now()),
-      this.getSessions(),
-    ]);
+    const [todayStats, weekSessions, monthSessions, allSessions] =
+      await Promise.all([
+        this.calculateDailyStats(today),
+        this.getSessionsByDateRange(weekStart.getTime(), Date.now()),
+        this.getSessionsByDateRange(monthStart.getTime(), Date.now()),
+        this.getSessions(),
+      ]);
 
     const completedWorkSessions = (sessions: Session[]) =>
       sessions.filter((s) => s.type === SessionType.WORK && s.wasCompleted);
@@ -796,24 +823,39 @@ export class StorageService implements IStorageService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const sessions = await this.getSessionsByDateRange(startOfDay.getTime(), endOfDay.getTime());
+    const sessions = await this.getSessionsByDateRange(
+      startOfDay.getTime(),
+      endOfDay.getTime()
+    );
     const tasks = await this.getTasks();
 
     const workSessions = sessions.filter((s) => s.type === SessionType.WORK);
     const breakSessions = sessions.filter(
-      (s) => s.type === SessionType.SHORT_BREAK || s.type === SessionType.LONG_BREAK
+      (s) =>
+        s.type === SessionType.SHORT_BREAK || s.type === SessionType.LONG_BREAK
     );
 
     return {
       date,
       workSessions: workSessions.filter((s) => s.wasCompleted).length,
-      totalWorkTime: workSessions.reduce((sum, s) => sum + (s.actualDuration || 0), 0),
-      totalBreakTime: breakSessions.reduce((sum, s) => sum + (s.actualDuration || 0), 0),
+      totalWorkTime: workSessions.reduce(
+        (sum, s) => sum + (s.actualDuration || 0),
+        0
+      ),
+      totalBreakTime: breakSessions.reduce(
+        (sum, s) => sum + (s.actualDuration || 0),
+        0
+      ),
       completedTasks: tasks.filter(
-        (t) => t.completedAt && t.completedAt >= startOfDay.getTime() && t.completedAt <= endOfDay.getTime()
+        (t) =>
+          t.completedAt &&
+          t.completedAt >= startOfDay.getTime() &&
+          t.completedAt <= endOfDay.getTime()
       ).length,
       tasksCreated: tasks.filter(
-        (t) => t.createdAt >= startOfDay.getTime() && t.createdAt <= endOfDay.getTime()
+        (t) =>
+          t.createdAt >= startOfDay.getTime() &&
+          t.createdAt <= endOfDay.getTime()
       ).length,
       longestStreak: this.calculateLongestStreak(workSessions),
     };
@@ -843,11 +885,16 @@ export class StorageService implements IStorageService {
     let longestStreak = 0;
     let currentStreak = 0;
 
-    for (const session of sessions.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))) {
+    for (const session of sessions.sort(
+      (a, b) => (a.createdAt || 0) - (b.createdAt || 0)
+    )) {
       if (session.type === SessionType.WORK && session.wasCompleted) {
         currentStreak++;
         longestStreak = Math.max(longestStreak, currentStreak);
-      } else if (session.type === SessionType.SHORT_BREAK || session.type === SessionType.LONG_BREAK) {
+      } else if (
+        session.type === SessionType.SHORT_BREAK ||
+        session.type === SessionType.LONG_BREAK
+      ) {
         // Breaks don't reset streak
       } else {
         currentStreak = 0;
@@ -916,7 +963,11 @@ export class StorageService implements IStorageService {
     await this.init();
 
     // Validate data structure
-    if (!data.version || !Array.isArray(data.tasks) || !Array.isArray(data.sessions)) {
+    if (
+      !data.version ||
+      !Array.isArray(data.tasks) ||
+      !Array.isArray(data.sessions)
+    ) {
       throw new StorageError('Invalid backup data', 'INVALID_BACKUP');
     }
 
@@ -955,8 +1006,12 @@ export class StorageService implements IStorageService {
     await this.init();
 
     if (this.storageType === StorageType.INDEXED_DB) {
-      await this.taskRepo.deleteMany((await this.taskRepo.findAll()).map((t) => t.id));
-      await this.sessionRepo.deleteMany((await this.sessionRepo.findAll()).map((s) => s.id));
+      await this.taskRepo.deleteMany(
+        (await this.taskRepo.findAll()).map((t) => t.id)
+      );
+      await this.sessionRepo.deleteMany(
+        (await this.sessionRepo.findAll()).map((s) => s.id)
+      );
     } else if (this.storageType === StorageType.LOCAL_STORAGE) {
       this.ls.clear();
     } else {
@@ -1038,7 +1093,10 @@ export class StorageService implements IStorageService {
   /**
    * Add an event listener
    */
-  addEventListener<T = any>(eventType: StorageEventType, listener: StorageEventListener<T>): void {
+  addEventListener<T = any>(
+    eventType: StorageEventType,
+    listener: StorageEventListener<T>
+  ): void {
     if (!this.eventListeners.has(eventType)) {
       this.eventListeners.set(eventType, new Set());
     }
@@ -1048,7 +1106,10 @@ export class StorageService implements IStorageService {
   /**
    * Remove an event listener
    */
-  removeEventListener(eventType: StorageEventType, listener: StorageEventListener<any>): void {
+  removeEventListener(
+    eventType: StorageEventType,
+    listener: StorageEventListener<any>
+  ): void {
     const listeners = this.eventListeners.get(eventType);
     if (listeners) {
       listeners.delete(listener);
@@ -1073,7 +1134,10 @@ export class StorageService implements IStorageService {
         try {
           listener(event);
         } catch (error) {
-          console.error(`[Storage] Error in event listener for ${eventType}:`, error);
+          console.error(
+            `[Storage] Error in event listener for ${eventType}:`,
+            error
+          );
         }
       });
     }
@@ -1148,7 +1212,9 @@ export class StorageService implements IStorageService {
             const tasks = getAllRequest.result as Task[];
             if (tasks.length > 0) {
               this.ls.set(LS_KEYS.TASKS_BACKUP, tasks);
-              console.log(`[Storage] Migrated ${tasks.length} tasks to LocalStorage`);
+              console.log(
+                `[Storage] Migrated ${tasks.length} tasks to LocalStorage`
+              );
             }
             db.close();
           };
@@ -1196,8 +1262,8 @@ export function createTask(data: Partial<Task> = {}): Task {
     id: data.id || generateId(),
     title: data.title || 'New Task',
     description: data.description,
-    priority: data.priority || 'medium' as TaskPriority,
-    status: data.status || 'todo' as TaskStatus,
+    priority: data.priority || ('medium' as TaskPriority),
+    status: data.status || ('todo' as TaskStatus),
     estimatedPomodoros: data.estimatedPomodoros || 1,
     completedPomodoros: data.completedPomodoros || 0,
     tags: data.tags || [],
@@ -1216,7 +1282,7 @@ export function createSession(data: Partial<Session> = {}): Session {
   return {
     id: data.id || generateId(),
     taskId: data.taskId ?? null,
-    type: data.type || 'work' as SessionType,
+    type: data.type || ('work' as SessionType),
     duration: data.duration || 25 * 60,
     actualDuration: data.actualDuration || 0,
     startedAt: data.startedAt || now,

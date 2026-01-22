@@ -183,6 +183,10 @@ export function getDaysDiff(date1: Date, date2: Date): number {
  * @param endTimestamp 结束时间戳
  * @returns 是否在范围内
  */
-export function isInRange(timestamp: number, startTimestamp: number, endTimestamp: number): boolean {
+export function isInRange(
+  timestamp: number,
+  startTimestamp: number,
+  endTimestamp: number
+): boolean {
   return timestamp >= startTimestamp && timestamp <= endTimestamp;
 }

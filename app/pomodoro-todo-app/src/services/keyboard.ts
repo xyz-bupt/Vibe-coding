@@ -96,7 +96,7 @@ export class KeyboardShortcutManager {
     'input',
     'textarea',
     'select',
-    '[contenteditable="true"]'
+    '[contenteditable="true"]',
   ];
 
   // Event listener reference for cleanup
@@ -122,9 +122,8 @@ export class KeyboardShortcutManager {
     handler: ShortcutHandler,
     options: ShortcutOptions = {}
   ): () => void {
-    const shortcutKey = typeof keyCombo === 'string'
-      ? this.parseKeyCombo(keyCombo)
-      : keyCombo;
+    const shortcutKey =
+      typeof keyCombo === 'string' ? this.parseKeyCombo(keyCombo) : keyCombo;
 
     const id = this.generateShortcutId(shortcutKey);
 
@@ -136,7 +135,7 @@ export class KeyboardShortcutManager {
       preventDefault: options.preventDefault ?? true,
       stopPropagation: options.stopPropagation ?? false,
       condition: options.condition,
-      onTrigger: options.onTrigger
+      onTrigger: options.onTrigger,
     };
 
     this.shortcuts.set(id, entry);
@@ -156,9 +155,8 @@ export class KeyboardShortcutManager {
    * Unregister all shortcuts matching a key combo
    */
   unregisterByKey(keyCombo: string | ShortcutKey): void {
-    const shortcutKey = typeof keyCombo === 'string'
-      ? this.parseKeyCombo(keyCombo)
-      : keyCombo;
+    const shortcutKey =
+      typeof keyCombo === 'string' ? this.parseKeyCombo(keyCombo) : keyCombo;
 
     const id = this.generateShortcutId(shortcutKey);
     this.unregister(id);
@@ -168,9 +166,8 @@ export class KeyboardShortcutManager {
    * Update shortcut enabled state
    */
   setEnabled(keyCombo: string | ShortcutKey, enabled: boolean): void {
-    const shortcutKey = typeof keyCombo === 'string'
-      ? this.parseKeyCombo(keyCombo)
-      : keyCombo;
+    const shortcutKey =
+      typeof keyCombo === 'string' ? this.parseKeyCombo(keyCombo) : keyCombo;
 
     const id = this.generateShortcutId(shortcutKey);
     const entry = this.shortcuts.get(id);
@@ -184,9 +181,8 @@ export class KeyboardShortcutManager {
    * Check if a shortcut is registered
    */
   has(keyCombo: string | ShortcutKey): boolean {
-    const shortcutKey = typeof keyCombo === 'string'
-      ? this.parseKeyCombo(keyCombo)
-      : keyCombo;
+    const shortcutKey =
+      typeof keyCombo === 'string' ? this.parseKeyCombo(keyCombo) : keyCombo;
 
     const id = this.generateShortcutId(shortcutKey);
     return this.shortcuts.has(id);
@@ -195,20 +191,29 @@ export class KeyboardShortcutManager {
   /**
    * Get all registered shortcuts
    */
-  getAll(): Array<{ id: string; shortcut: ShortcutKey; description: string; enabled: boolean }> {
+  getAll(): Array<{
+    id: string;
+    shortcut: ShortcutKey;
+    description: string;
+    enabled: boolean;
+  }> {
     return Array.from(this.shortcuts.entries()).map(([id, entry]) => ({
       id,
       shortcut: entry.key,
       description: entry.description,
-      enabled: entry.enabled
+      enabled: entry.enabled,
     }));
   }
 
   /**
    * Get enabled shortcuts only
    */
-  getEnabled(): Array<{ id: string; shortcut: ShortcutKey; description: string }> {
-    return this.getAll().filter(s => s.enabled);
+  getEnabled(): Array<{
+    id: string;
+    shortcut: ShortcutKey;
+    description: string;
+  }> {
+    return this.getAll().filter((s) => s.enabled);
   }
 
   /**
@@ -229,7 +234,9 @@ export class KeyboardShortcutManager {
     if (this.attached) return;
 
     this.keydownHandler = this.handleKeyDown.bind(this);
-    document.addEventListener('keydown', this.keydownHandler, { passive: false });
+    document.addEventListener('keydown', this.keydownHandler, {
+      passive: false,
+    });
     this.attached = true;
   }
 
@@ -316,7 +323,7 @@ export class KeyboardShortcutManager {
       ctrlKey: event.ctrlKey,
       metaKey: event.metaKey,
       shiftKey: event.shiftKey,
-      altKey: event.altKey
+      altKey: event.altKey,
     };
   }
 
@@ -340,12 +347,12 @@ export class KeyboardShortcutManager {
       // Handle special keys
       const specialKeys: Record<string, string> = {
         ' ': 'space',
-        'arrowup': 'up',
-        'arrowdown': 'down',
-        'arrowleft': 'left',
-        'arrowright': 'right',
-        'escape': 'esc',
-        'control': 'ctrl'
+        arrowup: 'up',
+        arrowdown: 'down',
+        arrowleft: 'left',
+        arrowright: 'right',
+        escape: 'esc',
+        control: 'ctrl',
       };
       return specialKeys[key.toLowerCase()] || key.toLowerCase();
     };
@@ -372,14 +379,17 @@ export class KeyboardShortcutManager {
    * - "Meta+,"
    */
   private parseKeyCombo(combo: string): ShortcutKey {
-    const parts = combo.toLowerCase().split('+').map(p => p.trim());
+    const parts = combo
+      .toLowerCase()
+      .split('+')
+      .map((p) => p.trim());
 
     const result: ShortcutKey = {
       key: '',
       ctrlKey: false,
       metaKey: false,
       shiftKey: false,
-      altKey: false
+      altKey: false,
     };
 
     for (const part of parts) {
@@ -414,15 +424,15 @@ export class KeyboardShortcutManager {
    */
   private normalizeKeyName(name: string): string {
     const aliases: Record<string, string> = {
-      'space': ' ',
-      'esc': 'escape',
-      'up': 'arrowup',
-      'down': 'arrowdown',
-      'left': 'arrowleft',
-      'right': 'arrowright',
-      'return': 'enter',
-      'plus': '+',
-      'minus': '-'
+      space: ' ',
+      esc: 'escape',
+      up: 'arrowup',
+      down: 'arrowdown',
+      left: 'arrowleft',
+      right: 'arrowright',
+      return: 'enter',
+      plus: '+',
+      minus: '-',
     };
 
     return aliases[name.toLowerCase()] || name.toLowerCase();
@@ -496,128 +506,131 @@ export class DefaultShortcuts {
   /**
    * Register all default shortcuts
    */
-  static register(manager: KeyboardShortcutManager, handlers: {
-    startPauseTimer?: () => void;
-    newTask?: () => void;
-    completeTask?: () => void;
-    nextTask?: () => void;
-    previousTask?: () => void;
-    openSettings?: () => void;
-    resetTimer?: () => void;
-    skipSession?: () => void;
-    toggleTimer?: () => void;
-    deleteTask?: () => void;
-    editTask?: () => void;
-    focusSearch?: () => void;
-    toggleSidebar?: () => void;
-  }): Array<() => void> {
+  static register(
+    manager: KeyboardShortcutManager,
+    handlers: {
+      startPauseTimer?: () => void;
+      newTask?: () => void;
+      completeTask?: () => void;
+      nextTask?: () => void;
+      previousTask?: () => void;
+      openSettings?: () => void;
+      resetTimer?: () => void;
+      skipSession?: () => void;
+      toggleTimer?: () => void;
+      deleteTask?: () => void;
+      editTask?: () => void;
+      focusSearch?: () => void;
+      toggleSidebar?: () => void;
+    }
+  ): Array<() => void> {
     const unsubs: Array<() => void> = [];
 
     // Timer shortcuts
     if (handlers.startPauseTimer) {
-      unsubs.push(manager.register(
-        'Ctrl+Enter',
-        handlers.startPauseTimer,
-        { description: 'Start/Pause Timer' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+Enter', handlers.startPauseTimer, {
+          description: 'Start/Pause Timer',
+        })
+      );
     }
 
     if (handlers.toggleTimer) {
-      unsubs.push(manager.register(
-        'Space',
-        handlers.toggleTimer,
-        { description: 'Toggle Timer (when not in input)' }
-      ));
+      unsubs.push(
+        manager.register('Space', handlers.toggleTimer, {
+          description: 'Toggle Timer (when not in input)',
+        })
+      );
     }
 
     if (handlers.resetTimer) {
-      unsubs.push(manager.register(
-        'Ctrl+R',
-        handlers.resetTimer,
-        { description: 'Reset Timer' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+R', handlers.resetTimer, {
+          description: 'Reset Timer',
+        })
+      );
     }
 
     if (handlers.skipSession) {
-      unsubs.push(manager.register(
-        'Ctrl+Shift+S',
-        handlers.skipSession,
-        { description: 'Skip Current Session' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+Shift+S', handlers.skipSession, {
+          description: 'Skip Current Session',
+        })
+      );
     }
 
     // Task shortcuts
     if (handlers.newTask) {
-      unsubs.push(manager.register(
-        'Ctrl+N',
-        handlers.newTask,
-        { description: 'New Task' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+N', handlers.newTask, {
+          description: 'New Task',
+        })
+      );
     }
 
     if (handlers.completeTask) {
-      unsubs.push(manager.register(
-        'Ctrl+D',
-        handlers.completeTask,
-        { description: 'Complete Task' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+D', handlers.completeTask, {
+          description: 'Complete Task',
+        })
+      );
     }
 
     if (handlers.nextTask) {
-      unsubs.push(manager.register(
-        'Ctrl+Shift+N',
-        handlers.nextTask,
-        { description: 'Next Task' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+Shift+N', handlers.nextTask, {
+          description: 'Next Task',
+        })
+      );
     }
 
     if (handlers.previousTask) {
-      unsubs.push(manager.register(
-        'Ctrl+Shift+P',
-        handlers.previousTask,
-        { description: 'Previous Task' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+Shift+P', handlers.previousTask, {
+          description: 'Previous Task',
+        })
+      );
     }
 
     if (handlers.deleteTask) {
-      unsubs.push(manager.register(
-        'Ctrl+Backspace',
-        handlers.deleteTask,
-        { description: 'Delete Task' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+Backspace', handlers.deleteTask, {
+          description: 'Delete Task',
+        })
+      );
     }
 
     if (handlers.editTask) {
-      unsubs.push(manager.register(
-        'Ctrl+E',
-        handlers.editTask,
-        { description: 'Edit Task' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+E', handlers.editTask, {
+          description: 'Edit Task',
+        })
+      );
     }
 
     // App shortcuts
     if (handlers.openSettings) {
-      unsubs.push(manager.register(
-        'Ctrl+,',
-        handlers.openSettings,
-        { description: 'Open Settings' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+,', handlers.openSettings, {
+          description: 'Open Settings',
+        })
+      );
     }
 
     if (handlers.focusSearch) {
-      unsubs.push(manager.register(
-        'Ctrl+F',
-        handlers.focusSearch,
-        { description: 'Focus Search' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+F', handlers.focusSearch, {
+          description: 'Focus Search',
+        })
+      );
     }
 
     if (handlers.toggleSidebar) {
-      unsubs.push(manager.register(
-        'Ctrl+B',
-        handlers.toggleSidebar,
-        { description: 'Toggle Sidebar' }
-      ));
+      unsubs.push(
+        manager.register('Ctrl+B', handlers.toggleSidebar, {
+          description: 'Toggle Sidebar',
+        })
+      );
     }
 
     return unsubs;
@@ -633,7 +646,11 @@ export class DefaultShortcuts {
   }> {
     return [
       // Timer
-      { combo: 'Ctrl+Enter', description: 'Start/Pause Timer', category: 'Timer' },
+      {
+        combo: 'Ctrl+Enter',
+        description: 'Start/Pause Timer',
+        category: 'Timer',
+      },
       { combo: 'Space', description: 'Toggle Timer', category: 'Timer' },
       { combo: 'Ctrl+R', description: 'Reset Timer', category: 'Timer' },
       { combo: 'Ctrl+Shift+S', description: 'Skip Session', category: 'Timer' },
@@ -641,13 +658,21 @@ export class DefaultShortcuts {
       { combo: 'Ctrl+N', description: 'New Task', category: 'Tasks' },
       { combo: 'Ctrl+D', description: 'Complete Task', category: 'Tasks' },
       { combo: 'Ctrl+Shift+N', description: 'Next Task', category: 'Tasks' },
-      { combo: 'Ctrl+Shift+P', description: 'Previous Task', category: 'Tasks' },
+      {
+        combo: 'Ctrl+Shift+P',
+        description: 'Previous Task',
+        category: 'Tasks',
+      },
       { combo: 'Ctrl+E', description: 'Edit Task', category: 'Tasks' },
-      { combo: 'Ctrl+Backspace', description: 'Delete Task', category: 'Tasks' },
+      {
+        combo: 'Ctrl+Backspace',
+        description: 'Delete Task',
+        category: 'Tasks',
+      },
       // App
       { combo: 'Ctrl+,', description: 'Open Settings', category: 'App' },
       { combo: 'Ctrl+F', description: 'Search', category: 'App' },
-      { combo: 'Ctrl+B', description: 'Toggle Sidebar', category: 'App' }
+      { combo: 'Ctrl+B', description: 'Toggle Sidebar', category: 'App' },
     ];
   }
 }

@@ -15,7 +15,7 @@ import {
   TimerEventType,
   TimerEvent,
   TimerObserver,
-  TimerSettings
+  TimerSettings,
 } from '../types/index';
 import { AppStore } from '../store/AppStore';
 
@@ -26,7 +26,7 @@ enum AudioNotification {
   WORK_START = 'work_start',
   WORK_COMPLETE = 'work_complete',
   BREAK_START = 'break_start',
-  BREAK_COMPLETE = 'break_complete'
+  BREAK_COMPLETE = 'break_complete',
 }
 
 /**
@@ -95,9 +95,11 @@ export class TimerController {
     const state = this.store.getTimerState();
 
     // If already running, don't restart
-    if (state === TimerState.WORKING ||
-        state === TimerState.SHORT_BREAK ||
-        state === TimerState.LONG_BREAK) {
+    if (
+      state === TimerState.WORKING ||
+      state === TimerState.SHORT_BREAK ||
+      state === TimerState.LONG_BREAK
+    ) {
       return;
     }
 
@@ -111,9 +113,11 @@ export class TimerController {
     this.startInterval();
 
     // Play sound
-    this.playAudio(targetSessionType === SessionType.WORK
-      ? AudioNotification.WORK_START
-      : AudioNotification.BREAK_START);
+    this.playAudio(
+      targetSessionType === SessionType.WORK
+        ? AudioNotification.WORK_START
+        : AudioNotification.BREAK_START
+    );
 
     // Show notification
     this.showNotification(this.getSessionStartMessage(targetSessionType));
@@ -243,7 +247,7 @@ export class TimerController {
     this.lastTickTime = now;
 
     // Handle drift correction
-    this.driftCorrection += (elapsed - this.tickIntervalMs);
+    this.driftCorrection += elapsed - this.tickIntervalMs;
 
     // Only tick if we've accumulated enough drift
     if (Math.abs(this.driftCorrection) >= 100) {
@@ -282,9 +286,11 @@ export class TimerController {
     const settings = this.store.getSettings();
 
     // Play completion sound
-    this.playAudio(sessionType === SessionType.WORK
-      ? AudioNotification.WORK_COMPLETE
-      : AudioNotification.BREAK_COMPLETE);
+    this.playAudio(
+      sessionType === SessionType.WORK
+        ? AudioNotification.WORK_COMPLETE
+        : AudioNotification.BREAK_COMPLETE
+    );
 
     // Show notification
     this.showNotification(this.getSessionCompleteMessage(sessionType));
@@ -321,7 +327,8 @@ export class TimerController {
     const settings = this.store.getSettings();
     const currentState = this.store.getTimerState();
     const currentSession = this.store.getCurrentSessionType();
-    const completedSessions = this.store.getState().completedSessionsSinceLastLongBreak;
+    const completedSessions =
+      this.store.getState().completedSessionsSinceLastLongBreak;
 
     // If currently idle, start with work
     if (currentState === TimerState.IDLE && !currentSession) {
@@ -329,7 +336,10 @@ export class TimerController {
     }
 
     // If just completed a work session, determine break type
-    if (currentState === TimerState.IDLE && currentSession === SessionType.WORK) {
+    if (
+      currentState === TimerState.IDLE &&
+      currentSession === SessionType.WORK
+    ) {
       // Check if we need a long break
       if (completedSessions >= settings.longBreakInterval) {
         return SessionType.LONG_BREAK;
@@ -338,8 +348,11 @@ export class TimerController {
     }
 
     // If just completed a break, return to work
-    if (currentState === TimerState.IDLE &&
-        (currentSession === SessionType.SHORT_BREAK || currentSession === SessionType.LONG_BREAK)) {
+    if (
+      currentState === TimerState.IDLE &&
+      (currentSession === SessionType.SHORT_BREAK ||
+        currentSession === SessionType.LONG_BREAK)
+    ) {
       return SessionType.WORK;
     }
 
@@ -396,7 +409,7 @@ export class TimerController {
         body: message,
         icon: this.getNotificationIcon(),
         badge: this.getNotificationIcon(),
-        tag: 'pomodoro-timer'
+        tag: 'pomodoro-timer',
       });
     }
   }
@@ -415,7 +428,7 @@ export class TimerController {
   private getSessionStartMessage(sessionType: SessionType): string {
     switch (sessionType) {
       case SessionType.WORK:
-        return 'Time to focus! Let\'s get to work.';
+        return "Time to focus! Let's get to work.";
       case SessionType.SHORT_BREAK:
         return 'Great work! Take a short break.';
       case SessionType.LONG_BREAK:
@@ -454,7 +467,9 @@ export class TimerController {
 
     // Initialize audio context if needed
     if (!this.audioContext) {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.audioContext = new (
+        window.AudioContext || (window as any).webkitAudioContext
+      )();
     }
 
     // Play sound based on type
@@ -480,7 +495,11 @@ export class TimerController {
   /**
    * Play a tone with specified frequency and duration
    */
-  private playTone(frequency: number, duration: number, type: OscillatorType = 'sine'): void {
+  private playTone(
+    frequency: number,
+    duration: number,
+    type: OscillatorType = 'sine'
+  ): void {
     if (!this.audioContext) return;
 
     const settings = this.store.getSettings();
@@ -533,9 +552,11 @@ export class TimerController {
     const state = this.store.getTimerState();
 
     // Save state if timer was running
-    if (state === TimerState.WORKING ||
-        state === TimerState.SHORT_BREAK ||
-        state === TimerState.LONG_BREAK) {
+    if (
+      state === TimerState.WORKING ||
+      state === TimerState.SHORT_BREAK ||
+      state === TimerState.LONG_BREAK
+    ) {
       this.wasRunningBeforeHidden = true;
       this.tabHiddenTime = Date.now();
     } else {
@@ -583,7 +604,7 @@ export class TimerController {
    */
   private handleStoreTimerEvent(event: TimerEvent): void {
     // Notify all observers
-    this.observers.forEach(observer => {
+    this.observers.forEach((observer) => {
       try {
         observer(event);
       } catch (error) {
@@ -645,7 +666,9 @@ export class TimerController {
   getPercentageCompleted(): number {
     const remainingTime = this.store.getRemainingTime();
     const sessionType = this.store.getCurrentSessionType();
-    const totalTime = sessionType ? this.getDuration(sessionType) : remainingTime;
+    const totalTime = sessionType
+      ? this.getDuration(sessionType)
+      : remainingTime;
 
     if (totalTime === 0) return 0;
 

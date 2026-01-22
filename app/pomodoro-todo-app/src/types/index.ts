@@ -5,7 +5,7 @@
 /**
  * Timer state enumeration representing all possible states of the pomodoro timer
  */
-export enum TimerState {
+export enum TimerStateEnum {
   IDLE = 'idle',
   WORKING = 'working',
   SHORT_BREAK = 'short_break',
@@ -16,7 +16,7 @@ export enum TimerState {
 /**
  * Task priority levels
  */
-export enum TaskPriority {
+export enum TaskPriorityEnum {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
@@ -26,7 +26,7 @@ export enum TaskPriority {
 /**
  * Task status enumeration
  */
-export enum TaskStatus {
+export enum TaskStatusEnum {
   TODO = 'todo',
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
@@ -40,8 +40,8 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
-  priority: TaskPriority;
-  status: TaskStatus;
+  priority: TaskPriorityEnumEnum;
+  status: TaskStatusEnumEnum;
   estimatedPomodoros?: number;
   completedPomodoros: number;
   tags?: string[];
@@ -133,7 +133,7 @@ export enum TimerEventType {
  */
 export interface TimerEvent {
   type: TimerEventType;
-  state: TimerState;
+  state: TimerStateEnum;
   remainingTime: number;
   timestamp: number;
   taskId?: string;
@@ -199,7 +199,7 @@ export enum AudioEventType {
 export interface AppState {
   tasks: Task[];
   activeTaskId: string | null;
-  timerState: TimerState;
+  timerState: TimerStateEnum;
   remainingTime: number;
   currentSessionType: SessionType | null;
   completedSessionsSinceLastLongBreak: number;
@@ -264,8 +264,8 @@ export interface Toast {
  * Filter options for task list
  */
 export interface TaskFilter {
-  status?: TaskStatus | 'all';
-  priority?: TaskPriority | 'all';
+  status?: TaskStatusEnum | 'all';
+  priority?: TaskPriorityEnum | 'all';
   projectId?: string | 'all';
   searchQuery?: string;
   tags?: string[];
@@ -301,17 +301,6 @@ export interface AutoSaveConfig {
 // ============================================================================
 
 /**
- * Session status enumeration
- */
-export enum SessionStatus {
-  PENDING = 'pending',
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  PAUSED = 'paused'
-}
-
-/**
  * Enhanced Session entity with status tracking
  */
 export interface EnhancedSession extends Session {
@@ -325,9 +314,9 @@ export interface EnhancedSession extends Session {
 }
 
 /**
- * App settings configuration (extends TimerSettings)
+ * Modern App settings configuration (extends TimerSettings)
  */
-export interface AppSettings extends TimerSettings {
+export interface AppSettingsModern extends TimerSettings {
   theme: 'light' | 'dark' | 'auto';
   language: string;
   dailyGoal: number;
@@ -386,18 +375,18 @@ export interface ITaskRepository {
   saveMany(tasks: Task[]): Promise<void>;
   findAll(): Promise<Task[]>;
   findById(id: string): Promise<Task | null>;
-  findByStatus(status: TaskStatus): Promise<Task[]>;
-  findByPriority(priority: TaskPriority): Promise<Task[]>;
+  findByStatus(status: TaskStatusEnumEnum): Promise<Task[]>;
+  findByPriority(priority: TaskPriorityEnumEnum): Promise<Task[]>;
   findDueToday(): Promise<Task[]>;
   findByTag(tag: string): Promise<Task[]>;
   findByProject(projectId: string): Promise<Task[]>;
   delete(id: string): Promise<void>;
   deleteMany(ids: string[]): Promise<void>;
-  updateStatus(id: string, status: TaskStatus): Promise<void>;
-  updateStatusMany(ids: string[], status: TaskStatus): Promise<void>;
+  updateStatus(id: string, status: TaskStatusEnumEnum): Promise<void>;
+  updateStatusMany(ids: string[], status: TaskStatusEnumEnum): Promise<void>;
   exists(id: string): Promise<boolean>;
   count(): Promise<number>;
-  countByStatus(status: TaskStatus): Promise<number>;
+  countByStatus(status: TaskStatusEnumEnum): Promise<number>;
 }
 
 export interface ISessionRepository {
@@ -490,4 +479,172 @@ export class MigrationError extends StorageError {
     super(message, 'MIGRATION_ERROR', originalError);
     this.name = 'MigrationError';
   }
+}
+
+// ============================================================================
+// Legacy Types for Backward Compatibility
+// These types are used by the existing Chinese codebase
+// ============================================================================
+
+/**
+ * Legacy timer mode
+ */
+export type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak';
+
+/**
+ * Legacy timer state (primary export for existing codebase)
+ */
+export type TimerState = 'idle' | 'running' | 'paused' | 'completed';
+
+/**
+ * Legacy task priority (primary export for existing codebase)
+ */
+export type TaskPriority = 'low' | 'medium' | 'high';
+
+/**
+ * Legacy task status (primary export for existing codebase)
+ */
+export type TaskStatus = 'active' | 'completed';
+
+/**
+ * Legacy task entity (primary export for existing codebase)
+ */
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  priority: TaskPriorityEnumEnum;
+  status: TaskStatusEnumEnum;
+  estimatedPomodoros: number;
+  completedPomodoros: number;
+  createdAt: Date;
+  updatedAt: Date;
+  completedAt?: Date;
+}
+
+/**
+ * Legacy timer info interface
+ */
+export interface TimerInfo {
+  mode: TimerMode;
+  state: TimerStateEnum;
+  timeRemaining: number;
+  totalTime: number;
+  completedPomodoros: number;
+  currentTaskId?: string;
+}
+
+/**
+ * Legacy daily statistics
+ */
+export interface DailyStatistics {
+  date: Date;
+  pomodoroCount: number;
+  focusTime: number;
+  completedTasks: number;
+  goal: number;
+}
+
+/**
+ * Legacy total statistics
+ */
+export interface TotalStatistics {
+  totalPomodoros: number;
+  totalFocusTime: number;
+  totalTasks: number;
+  averageDailyPomodoros: number;
+  streak: number;
+}
+
+/**
+ * Legacy calendar day
+ */
+export interface CalendarDay {
+  date: Date;
+  pomodoroCount: number;
+  isToday: boolean;
+}
+
+/**
+ * Legacy application settings
+ */
+export interface AppSettings {
+  timer: {
+    pomodoroDuration: number;
+    shortBreakDuration: number;
+    longBreakDuration: number;
+    longBreakInterval: number;
+  };
+  notifications: {
+    enabled: boolean;
+    sound: boolean;
+    autoStartBreaks: boolean;
+    autoStartPomodoros: boolean;
+  };
+  appearance: {
+    theme: 'light' | 'dark' | 'auto';
+  };
+  dailyGoal: number;
+}
+
+/**
+ * Legacy settings form data
+ */
+export interface SettingsFormData {
+  pomodoroDuration: number;
+  shortBreakDuration: number;
+  longBreakDuration: number;
+  longBreakInterval: number;
+  dailyGoal: number;
+  enableNotifications: boolean;
+  enableSound: boolean;
+  autoStartBreaks: boolean;
+  autoStartPomodoros: boolean;
+  theme: 'light' | 'dark' | 'auto';
+}
+
+/**
+ * Legacy task form data
+ */
+export interface TaskFormData {
+  title: string;
+  description?: string;
+  priority: TaskPriorityEnumEnum;
+  estimatedPomodoros: number;
+}
+
+/**
+ * Legacy task filter
+ */
+export type TaskFilter = 'all' | 'active' | 'completed';
+
+/**
+ * Legacy event type
+ */
+export type EventType =
+  | 'timer:start'
+  | 'timer:pause'
+  | 'timer:reset'
+  | 'timer:complete'
+  | 'timer:skip'
+  | 'timer:modeChange'
+  | 'task:add'
+  | 'task:update'
+  | 'task:delete'
+  | 'task:complete'
+  | 'task:activate'
+  | 'settings:update';
+
+/**
+ * Legacy event listener
+ */
+export type EventListener = (data?: any) => void;
+
+/**
+ * Legacy toast action
+ */
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+  primary?: boolean;
 }

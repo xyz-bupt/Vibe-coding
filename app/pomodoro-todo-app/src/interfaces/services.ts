@@ -3,7 +3,16 @@
  * 定义业务逻辑层的抽象接口
  */
 
-import { Task, Session, Settings, Statistics, Tag, TimerEvent, NotificationData, TaskFilter } from '../types/index';
+import {
+  Task,
+  Session,
+  Settings,
+  Statistics,
+  Tag,
+  TimerEvent,
+  NotificationData,
+  TaskFilter,
+} from '../types/index';
 
 /**
  * 计时器服务接口
@@ -91,7 +100,10 @@ export interface ITaskService {
    * @param id 任务ID
    * @param updates 要更新的字段
    */
-  update(id: string, updates: Partial<Omit<Task, 'id' | 'createdAt'>>): Promise<Task>;
+  update(
+    id: string,
+    updates: Partial<Omit<Task, 'id' | 'createdAt'>>
+  ): Promise<Task>;
 
   /**
    * 删除任务
@@ -254,7 +266,11 @@ export interface IStatisticsService {
   /**
    * 获取今日统计
    */
-  getTodayStatistics(): Promise<{ pomodoros: number; focusTime: number; completedTasks: number }>;
+  getTodayStatistics(): Promise<{
+    pomodoros: number;
+    focusTime: number;
+    completedTasks: number;
+  }>;
 
   /**
    * 获取每周统计（最近7天）

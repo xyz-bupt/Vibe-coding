@@ -3,7 +3,15 @@
  * High-precision timer with pause/resume support and automatic state transitions
  */
 
-import { TimerState, TimerEvent, TimerEventType, TimerObserver, SessionType, Task, TimerSettings } from '../types';
+import {
+  TimerState,
+  TimerEvent,
+  TimerEventType,
+  TimerObserver,
+  SessionType,
+  Task,
+  TimerSettings,
+} from '../types/index';
 
 /**
  * Timer configuration options
@@ -47,15 +55,15 @@ export class PomodoroTimer {
 
   // Default settings
   private static readonly DEFAULT_SETTINGS: TimerSettings = {
-    workDuration: 1500,           // 25 minutes
-    shortBreakDuration: 300,      // 5 minutes
-    longBreakDuration: 900,       // 15 minutes
-    longBreakInterval: 4,         // Every 4 work sessions
+    workDuration: 1500, // 25 minutes
+    shortBreakDuration: 300, // 5 minutes
+    longBreakDuration: 900, // 15 minutes
+    longBreakInterval: 4, // Every 4 work sessions
     autoStartBreak: false,
     autoStartWork: false,
     notificationEnabled: true,
     soundEnabled: true,
-    volume: 0.7
+    volume: 0.7,
   };
 
   constructor(settings?: Partial<TimerSettings>) {
@@ -82,7 +90,11 @@ export class PomodoroTimer {
     duration?: number
   ): Promise<void> {
     // Validate state transitions
-    if (this.state === TimerState.WORKING || this.state === TimerState.SHORT_BREAK || this.state === TimerState.LONG_BREAK) {
+    if (
+      this.state === TimerState.WORKING ||
+      this.state === TimerState.SHORT_BREAK ||
+      this.state === TimerState.LONG_BREAK
+    ) {
       throw new Error('Cannot start timer: already running');
     }
 
@@ -100,7 +112,7 @@ export class PomodoroTimer {
       remainingTime: totalDuration,
       startTime: Date.now(),
       pausedAt: null,
-      accumulatedPause: 0
+      accumulatedPause: 0,
     };
 
     // Update state
@@ -113,7 +125,7 @@ export class PomodoroTimer {
       remainingTime: this.session.remainingTime,
       timestamp: Date.now(),
       taskId: this.currentTask?.id,
-      sessionType: this.session.type
+      sessionType: this.session.type,
     });
 
     // Start the timer loop
@@ -152,7 +164,7 @@ export class PomodoroTimer {
       remainingTime: this.session?.remainingTime ?? 0,
       timestamp: Date.now(),
       taskId: this.currentTask?.id,
-      sessionType: this.session?.type
+      sessionType: this.session?.type,
     });
   }
 
@@ -185,7 +197,7 @@ export class PomodoroTimer {
       remainingTime: this.session.remainingTime,
       timestamp: Date.now(),
       taskId: this.currentTask?.id,
-      sessionType: this.session.type
+      sessionType: this.session.type,
     });
 
     // Restart the timer loop
@@ -208,7 +220,7 @@ export class PomodoroTimer {
       state: this.state,
       remainingTime: 0,
       timestamp: Date.now(),
-      sessionType: undefined
+      sessionType: undefined,
     });
   }
 
@@ -230,7 +242,7 @@ export class PomodoroTimer {
       remainingTime: 0,
       timestamp: Date.now(),
       taskId: this.currentTask?.id,
-      sessionType
+      sessionType,
     });
   }
 
@@ -255,8 +267,12 @@ export class PomodoroTimer {
 
     // Calculate real-time remaining
     const now = Date.now();
-    const elapsed = (now - (this.session.startTime ?? now)) - this.session.accumulatedPause;
-    const remaining = Math.max(0, this.session.totalDuration - Math.floor(elapsed / 1000));
+    const elapsed =
+      now - (this.session.startTime ?? now) - this.session.accumulatedPause;
+    const remaining = Math.max(
+      0,
+      this.session.totalDuration - Math.floor(elapsed / 1000)
+    );
 
     return remaining;
   }
@@ -277,7 +293,7 @@ export class PomodoroTimer {
     }
 
     const remaining = this.getRemainingTime();
-    return Math.max(0, Math.min(1, 1 - (remaining / this.session.totalDuration)));
+    return Math.max(0, Math.min(1, 1 - remaining / this.session.totalDuration));
   }
 
   /**
@@ -352,7 +368,9 @@ export class PomodoroTimer {
    * Get the next break type based on completed work sessions
    */
   public getNextBreakType(): 'short_break' | 'long_break' {
-    return (this.completedWorkSessions + 1) % this.settings.longBreakInterval === 0
+    return (this.completedWorkSessions + 1) %
+      this.settings.longBreakInterval ===
+      0
       ? 'long_break'
       : 'short_break';
   }
@@ -360,7 +378,9 @@ export class PomodoroTimer {
   /**
    * Get duration for a specific session type
    */
-  private getDurationForType(type: 'work' | 'short_break' | 'long_break'): number {
+  private getDurationForType(
+    type: 'work' | 'short_break' | 'long_break'
+  ): number {
     switch (type) {
       case 'work':
         return this.settings.workDuration;
@@ -374,7 +394,9 @@ export class PomodoroTimer {
   /**
    * Map session type string to SessionType enum
    */
-  private mapToSessionType(type: 'work' | 'short_break' | 'long_break'): SessionType {
+  private mapToSessionType(
+    type: 'work' | 'short_break' | 'long_break'
+  ): SessionType {
     switch (type) {
       case 'work':
         return SessionType.WORK;
@@ -388,7 +410,9 @@ export class PomodoroTimer {
   /**
    * Map session type string to TimerState
    */
-  private mapToTimerState(type: 'work' | 'short_break' | 'long_break' | SessionType): TimerState {
+  private mapToTimerState(
+    type: 'work' | 'short_break' | 'long_break' | SessionType
+  ): TimerState {
     if (type === SessionType.WORK || type === 'work') {
       return TimerState.WORKING;
     }
@@ -412,7 +436,7 @@ export class PomodoroTimer {
         remainingTime: this.getRemainingTime(),
         timestamp: Date.now(),
         taskId: this.currentTask?.id,
-        sessionType: this.session?.type
+        sessionType: this.session?.type,
       });
     }
   }
@@ -452,11 +476,15 @@ export class PomodoroTimer {
     }
 
     const now = Date.now();
-    const elapsed = (now - (this.session.startTime ?? now)) - this.session.accumulatedPause;
+    const elapsed =
+      now - (this.session.startTime ?? now) - this.session.accumulatedPause;
     const elapsedSeconds = Math.floor(elapsed / 1000);
 
     // Calculate remaining time
-    this.session.remainingTime = Math.max(0, this.session.totalDuration - elapsedSeconds);
+    this.session.remainingTime = Math.max(
+      0,
+      this.session.totalDuration - elapsedSeconds
+    );
 
     // Check if timer completed
     if (this.session.remainingTime <= 0) {
@@ -473,7 +501,7 @@ export class PomodoroTimer {
           remainingTime: this.session!.remainingTime,
           timestamp: now,
           taskId: this.currentTask?.id,
-          sessionType: this.session!.type
+          sessionType: this.session!.type,
         });
       } catch (error) {
         console.error('Error in timer observer:', error);
@@ -508,7 +536,7 @@ export class PomodoroTimer {
       remainingTime: 0,
       timestamp: Date.now(),
       taskId: this.currentTask?.id,
-      sessionType
+      sessionType,
     });
 
     // Clear session but keep data for controller to read
@@ -524,7 +552,7 @@ export class PomodoroTimer {
           remainingTime: 0,
           timestamp: Date.now(),
           taskId: this.currentTask?.id,
-          sessionType: completedSession?.type
+          sessionType: completedSession?.type,
         });
       } catch (error) {
         console.error('Error in timer observer:', error);
@@ -564,7 +592,7 @@ export class PomodoroTimer {
       duration: this.session.totalDuration,
       startedAt: this.session.startTime ?? Date.now(),
       completedAt: this.state === TimerState.IDLE ? Date.now() : null,
-      taskId: this.currentTask?.id ?? null
+      taskId: this.currentTask?.id ?? null,
     };
   }
 
@@ -590,6 +618,8 @@ export class PomodoroTimer {
 /**
  * Factory function to create a new PomodoroTimer instance
  */
-export function createPomodoroTimer(settings?: Partial<TimerSettings>): PomodoroTimer {
+export function createPomodoroTimer(
+  settings?: Partial<TimerSettings>
+): PomodoroTimer {
   return new PomodoroTimer(settings);
 }

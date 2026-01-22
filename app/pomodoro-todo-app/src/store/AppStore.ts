@@ -25,22 +25,22 @@ import {
   TaskFilter,
   Statistics,
   TimerEventType,
-  TimerEvent
+  TimerEvent,
 } from '../types/index';
 
 /**
  * Default timer settings
  */
 const DEFAULT_TIMER_SETTINGS: TimerSettings = {
-  workDuration: 25 * 60,           // 25 minutes
-  shortBreakDuration: 5 * 60,      // 5 minutes
-  longBreakDuration: 15 * 60,      // 15 minutes
-  longBreakInterval: 4,            // 4 pomodoros before long break
+  workDuration: 25 * 60, // 25 minutes
+  shortBreakDuration: 5 * 60, // 5 minutes
+  longBreakDuration: 15 * 60, // 15 minutes
+  longBreakInterval: 4, // 4 pomodoros before long break
   autoStartBreak: false,
   autoStartWork: false,
   notificationEnabled: true,
   soundEnabled: true,
-  volume: 0.7
+  volume: 0.7,
 };
 
 /**
@@ -58,7 +58,7 @@ const createInitialState = (): AppState => ({
   dailyStats: new Map(),
   projects: [],
   isLoading: false,
-  error: null
+  error: null,
 });
 
 /**
@@ -99,7 +99,7 @@ export class AppStore {
     this.state = {
       ...createInitialState(),
       ...initialState,
-      dailyStats: initialState?.dailyStats || new Map()
+      dailyStats: initialState?.dailyStats || new Map(),
     };
   }
 
@@ -128,33 +128,34 @@ export class AppStore {
     let filtered = [...this.state.tasks];
 
     if (filter.status && filter.status !== 'all') {
-      filtered = filtered.filter(t => t.status === filter.status);
+      filtered = filtered.filter((t) => t.status === filter.status);
     }
 
     if (filter.priority && filter.priority !== 'all') {
-      filtered = filtered.filter(t => t.priority === filter.priority);
+      filtered = filtered.filter((t) => t.priority === filter.priority);
     }
 
     if (filter.projectId && filter.projectId !== 'all') {
-      filtered = filtered.filter(t => t.projectId === filter.projectId);
+      filtered = filtered.filter((t) => t.projectId === filter.projectId);
     }
 
     if (filter.searchQuery) {
       const query = filter.searchQuery.toLowerCase();
-      filtered = filtered.filter(t =>
-        t.title.toLowerCase().includes(query) ||
-        t.description?.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (t) =>
+          t.title.toLowerCase().includes(query) ||
+          t.description?.toLowerCase().includes(query)
       );
     }
 
     if (filter.tags && filter.tags.length > 0) {
-      filtered = filtered.filter(t =>
-        t.tags?.some(tag => filter.tags!.includes(tag))
+      filtered = filtered.filter((t) =>
+        t.tags?.some((tag) => filter.tags!.includes(tag))
       );
     }
 
     if (filter.hideCompleted) {
-      filtered = filtered.filter(t => t.status !== TaskStatus.COMPLETED);
+      filtered = filtered.filter((t) => t.status !== TaskStatus.COMPLETED);
     }
 
     return filtered;
@@ -165,14 +166,16 @@ export class AppStore {
    */
   getActiveTask(): Task | null {
     if (!this.state.activeTaskId) return null;
-    return this.state.tasks.find(t => t.id === this.state.activeTaskId) || null;
+    return (
+      this.state.tasks.find((t) => t.id === this.state.activeTaskId) || null
+    );
   }
 
   /**
    * Get task by ID
    */
   getTaskById(id: string): Task | null {
-    return this.state.tasks.find(t => t.id === id) || null;
+    return this.state.tasks.find((t) => t.id === id) || null;
   }
 
   /**
@@ -214,7 +217,7 @@ export class AppStore {
    * Get sessions for a specific task
    */
   getSessionsByTask(taskId: string): Session[] {
-    return this.state.sessions.filter(s => s.taskId === taskId);
+    return this.state.sessions.filter((s) => s.taskId === taskId);
   }
 
   /**
@@ -233,24 +236,25 @@ export class AppStore {
       today: {
         workSessions: todayStats?.workSessions || 0,
         totalWorkTime: todayStats?.totalWorkTime || 0,
-        completedTasks: this.state.tasks.filter(t =>
-          t.status === TaskStatus.COMPLETED &&
-          new Date(t.updatedAt).toDateString() === new Date().toDateString()
+        completedTasks: this.state.tasks.filter(
+          (t) =>
+            t.status === TaskStatus.COMPLETED &&
+            new Date(t.updatedAt).toDateString() === new Date().toDateString()
         ).length,
-        focusPercentage: this.calculateFocusPercentage()
+        focusPercentage: this.calculateFocusPercentage(),
       },
       week: {
         workSessions: weekStats.workSessions,
         totalWorkTime: weekStats.totalWorkTime,
         completedTasks: weekStats.completedTasks,
-        averageDailySessions: weekStats.averageDailySessions
+        averageDailySessions: weekStats.averageDailySessions,
       },
       overall: {
         totalWorkSessions: overallStats.totalWorkSessions,
         totalWorkTime: overallStats.totalWorkTime,
         totalCompletedTasks: overallStats.totalCompletedTasks,
-        longestStreak: overallStats.longestStreak
-      }
+        longestStreak: overallStats.longestStreak,
+      },
     };
   }
 
@@ -282,17 +286,19 @@ export class AppStore {
   /**
    * Add a new task
    */
-  async addTask(task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  async addTask(
+    task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<string> {
     const now = Date.now();
     const newTask: Task = {
       ...task,
       id: this.generateId(),
       createdAt: now,
       updatedAt: now,
-      completedPomodoros: task.completedPomodoros || 0
+      completedPomodoros: task.completedPomodoros || 0,
     };
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.tasks.push(newTask);
     });
 
@@ -302,9 +308,12 @@ export class AppStore {
   /**
    * Update an existing task
    */
-  async updateTask(id: string, updates: Partial<Omit<Task, 'id' | 'createdAt'>>): Promise<void> {
-    this.updateState draft => {
-      const index = draft.tasks.findIndex(t => t.id === id);
+  async updateTask(
+    id: string,
+    updates: Partial<Omit<Task, 'id' | 'createdAt'>>
+  ): Promise<void> {
+    this.updateState((draft) => {
+      const index = draft.tasks.findIndex((t) => t.id === id);
       if (index === -1) {
         throw new Error(`Task with id ${id} not found`);
       }
@@ -312,7 +321,7 @@ export class AppStore {
       draft.tasks[index] = {
         ...draft.tasks[index],
         ...updates,
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
     });
   }
@@ -321,8 +330,8 @@ export class AppStore {
    * Delete a task
    */
   async deleteTask(id: string): Promise<void> {
-    this.updateState draft => {
-      const index = draft.tasks.findIndex(t => t.id === id);
+    this.updateState((draft) => {
+      const index = draft.tasks.findIndex((t) => t.id === id);
       if (index === -1) {
         throw new Error(`Task with id ${id} not found`);
       }
@@ -340,15 +349,15 @@ export class AppStore {
    * Set active task
    */
   async setActiveTask(id: string): Promise<void> {
-    this.updateState draft => {
-      const task = draft.tasks.find(t => t.id === id);
+    this.updateState((draft) => {
+      const task = draft.tasks.find((t) => t.id === id);
       if (!task) {
         throw new Error(`Task with id ${id} not found`);
       }
 
       // Update previous active task status
       if (draft.activeTaskId) {
-        const prevTask = draft.tasks.find(t => t.id === draft.activeTaskId);
+        const prevTask = draft.tasks.find((t) => t.id === draft.activeTaskId);
         if (prevTask && prevTask.status === TaskStatus.IN_PROGRESS) {
           prevTask.status = TaskStatus.TODO;
         }
@@ -365,9 +374,9 @@ export class AppStore {
    * Clear active task
    */
   async clearActiveTask(): Promise<void> {
-    this.updateState draft => {
+    this.updateState((draft) => {
       if (draft.activeTaskId) {
-        const task = draft.tasks.find(t => t.id === draft.activeTaskId);
+        const task = draft.tasks.find((t) => t.id === draft.activeTaskId);
         if (task && task.status === TaskStatus.IN_PROGRESS) {
           task.status = TaskStatus.TODO;
           task.updatedAt = Date.now();
@@ -381,8 +390,8 @@ export class AppStore {
    * Complete a task
    */
   async completeTask(id: string): Promise<void> {
-    this.updateState draft => {
-      const task = draft.tasks.find(t => t.id === id);
+    this.updateState((draft) => {
+      const task = draft.tasks.find((t) => t.id === id);
       if (!task) {
         throw new Error(`Task with id ${id} not found`);
       }
@@ -392,7 +401,8 @@ export class AppStore {
 
       // Update daily stats
       const today = new Date().toISOString().split('T')[0];
-      const stats = draft.dailyStats.get(today) || this.createEmptyDailyStats(today);
+      const stats =
+        draft.dailyStats.get(today) || this.createEmptyDailyStats(today);
       stats.completedTasks++;
       draft.dailyStats.set(today, stats);
     });
@@ -402,8 +412,8 @@ export class AppStore {
    * Increment task pomodoro count
    */
   async incrementTaskPomodoros(id: string): Promise<void> {
-    this.updateState draft => {
-      const task = draft.tasks.find(t => t.id === id);
+    this.updateState((draft) => {
+      const task = draft.tasks.find((t) => t.id === id);
       if (!task) {
         throw new Error(`Task with id ${id} not found`);
       }
@@ -423,12 +433,13 @@ export class AppStore {
   async startTimer(sessionType: SessionType = SessionType.WORK): Promise<void> {
     const duration = this.getDurationForSessionType(sessionType);
 
-    this.updateState draft => {
-      draft.timerState = sessionType === SessionType.WORK
-        ? TimerState.WORKING
-        : (sessionType === SessionType.SHORT_BREAK
-          ? TimerState.SHORT_BREAK
-          : TimerState.LONG_BREAK);
+    this.updateState((draft) => {
+      draft.timerState =
+        sessionType === SessionType.WORK
+          ? TimerState.WORKING
+          : sessionType === SessionType.SHORT_BREAK
+            ? TimerState.SHORT_BREAK
+            : TimerState.LONG_BREAK;
       draft.currentSessionType = sessionType;
       draft.remainingTime = duration;
     });
@@ -439,7 +450,7 @@ export class AppStore {
       remainingTime: this.state.remainingTime,
       timestamp: Date.now(),
       taskId: this.state.activeTaskId,
-      sessionType
+      sessionType,
     });
   }
 
@@ -447,11 +458,14 @@ export class AppStore {
    * Pause timer
    */
   async pauseTimer(): Promise<void> {
-    if (this.state.timerState === TimerState.IDLE || this.state.timerState === TimerState.PAUSED) {
+    if (
+      this.state.timerState === TimerState.IDLE ||
+      this.state.timerState === TimerState.PAUSED
+    ) {
       return;
     }
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.timerState = TimerState.PAUSED;
     });
 
@@ -461,7 +475,7 @@ export class AppStore {
       remainingTime: this.state.remainingTime,
       timestamp: Date.now(),
       taskId: this.state.activeTaskId,
-      sessionType: this.state.currentSessionType!
+      sessionType: this.state.currentSessionType!,
     });
   }
 
@@ -473,13 +487,14 @@ export class AppStore {
       return;
     }
 
-    const previousState = this.state.currentSessionType === SessionType.WORK
-      ? TimerState.WORKING
-      : (this.state.currentSessionType === SessionType.SHORT_BREAK
-        ? TimerState.SHORT_BREAK
-        : TimerState.LONG_BREAK);
+    const previousState =
+      this.state.currentSessionType === SessionType.WORK
+        ? TimerState.WORKING
+        : this.state.currentSessionType === SessionType.SHORT_BREAK
+          ? TimerState.SHORT_BREAK
+          : TimerState.LONG_BREAK;
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.timerState = previousState;
     });
 
@@ -489,7 +504,7 @@ export class AppStore {
       remainingTime: this.state.remainingTime,
       timestamp: Date.now(),
       taskId: this.state.activeTaskId,
-      sessionType: this.state.currentSessionType!
+      sessionType: this.state.currentSessionType!,
     });
   }
 
@@ -500,7 +515,7 @@ export class AppStore {
     const sessionType = this.state.currentSessionType || SessionType.WORK;
     const duration = this.getDurationForSessionType(sessionType);
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.timerState = TimerState.IDLE;
       draft.remainingTime = duration;
       draft.currentSessionType = null;
@@ -510,7 +525,7 @@ export class AppStore {
       type: TimerEventType.RESET,
       state: this.state.timerState,
       remainingTime: this.state.remainingTime,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -518,13 +533,16 @@ export class AppStore {
    * Update timer remaining time (called by timer interval)
    */
   async tickTimer(): Promise<void> {
-    if (this.state.timerState === TimerState.IDLE || this.state.timerState === TimerState.PAUSED) {
+    if (
+      this.state.timerState === TimerState.IDLE ||
+      this.state.timerState === TimerState.PAUSED
+    ) {
       return;
     }
 
     const newRemainingTime = this.state.remainingTime - 1;
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.remainingTime = newRemainingTime;
     });
 
@@ -547,20 +565,23 @@ export class AppStore {
       taskId: this.state.activeTaskId,
       type: sessionType,
       duration: this.getDurationForSessionType(sessionType),
-      actualDuration: this.getDurationForSessionType(sessionType) - this.state.remainingTime,
-      startedAt: Date.now() - this.getDurationForSessionType(sessionType) * 1000,
+      actualDuration:
+        this.getDurationForSessionType(sessionType) - this.state.remainingTime,
+      startedAt:
+        Date.now() - this.getDurationForSessionType(sessionType) * 1000,
       completedAt: Date.now(),
       wasCompleted: true,
-      wasSkipped: false
+      wasSkipped: false,
     };
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       // Save session
       draft.sessions.push(session);
 
       // Update daily stats
       const today = new Date().toISOString().split('T')[0];
-      const stats = draft.dailyStats.get(today) || this.createEmptyDailyStats(today);
+      const stats =
+        draft.dailyStats.get(today) || this.createEmptyDailyStats(today);
 
       if (wasWorkSession) {
         stats.workSessions++;
@@ -569,21 +590,25 @@ export class AppStore {
 
         // Update active task pomodoro count
         if (draft.activeTaskId) {
-          const task = draft.tasks.find(t => t.id === draft.activeTaskId);
+          const task = draft.tasks.find((t) => t.id === draft.activeTaskId);
           if (task) {
             task.completedPomodoros++;
           }
         }
       } else {
-        stats.totalBreakTime += sessionType === SessionType.SHORT_BREAK
-          ? this.state.settings.shortBreakDuration
-          : this.state.settings.longBreakDuration;
+        stats.totalBreakTime +=
+          sessionType === SessionType.SHORT_BREAK
+            ? this.state.settings.shortBreakDuration
+            : this.state.settings.longBreakDuration;
       }
 
       draft.dailyStats.set(today, stats);
 
       // Update streak
-      stats.longestStreak = Math.max(stats.longestStreak, draft.completedSessionsSinceLastLongBreak);
+      stats.longestStreak = Math.max(
+        stats.longestStreak,
+        draft.completedSessionsSinceLastLongBreak
+      );
 
       // Reset timer to idle
       draft.timerState = TimerState.IDLE;
@@ -597,7 +622,7 @@ export class AppStore {
       remainingTime: 0,
       timestamp: Date.now(),
       taskId: this.state.activeTaskId,
-      sessionType
+      sessionType,
     });
   }
 
@@ -607,18 +632,22 @@ export class AppStore {
   async skipSession(): Promise<void> {
     const sessionType = this.state.currentSessionType!;
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       // Create skipped session record
       const session: Session = {
         id: this.generateId(),
         taskId: draft.activeTaskId,
         type: sessionType,
         duration: this.getDurationForSessionType(sessionType),
-        actualDuration: this.getDurationForSessionType(sessionType) - draft.remainingTime,
-        startedAt: Date.now() - (this.getDurationForSessionType(sessionType) - draft.remainingTime) * 1000,
+        actualDuration:
+          this.getDurationForSessionType(sessionType) - draft.remainingTime,
+        startedAt:
+          Date.now() -
+          (this.getDurationForSessionType(sessionType) - draft.remainingTime) *
+            1000,
         completedAt: Date.now(),
         wasCompleted: false,
-        wasSkipped: true
+        wasSkipped: true,
       };
 
       draft.sessions.push(session);
@@ -635,7 +664,7 @@ export class AppStore {
       remainingTime: this.state.remainingTime,
       timestamp: Date.now(),
       taskId: this.state.activeTaskId,
-      sessionType
+      sessionType,
     });
   }
 
@@ -647,17 +676,17 @@ export class AppStore {
    * Update timer settings
    */
   async updateSettings(settings: Partial<TimerSettings>): Promise<void> {
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.settings = {
         ...draft.settings,
-        ...settings
+        ...settings,
       };
     });
 
     // Update remaining time if timer is idle
     if (this.state.timerState === TimerState.IDLE) {
       const duration = this.state.settings.workDuration;
-      this.updateState draft => {
+      this.updateState((draft) => {
         draft.remainingTime = duration;
       });
     }
@@ -670,14 +699,16 @@ export class AppStore {
   /**
    * Add project
    */
-  async addProject(project: Omit<Project, 'id' | 'createdAt'>): Promise<string> {
+  async addProject(
+    project: Omit<Project, 'id' | 'createdAt'>
+  ): Promise<string> {
     const newProject: Project = {
       ...project,
       id: this.generateId(),
-      createdAt: Date.now()
+      createdAt: Date.now(),
     };
 
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.projects.push(newProject);
     });
 
@@ -687,16 +718,19 @@ export class AppStore {
   /**
    * Update project
    */
-  async updateProject(id: string, updates: Partial<Omit<Project, 'id' | 'createdAt'>>): Promise<void> {
-    this.updateState draft => {
-      const index = draft.projects.findIndex(p => p.id === id);
+  async updateProject(
+    id: string,
+    updates: Partial<Omit<Project, 'id' | 'createdAt'>>
+  ): Promise<void> {
+    this.updateState((draft) => {
+      const index = draft.projects.findIndex((p) => p.id === id);
       if (index === -1) {
         throw new Error(`Project with id ${id} not found`);
       }
 
       draft.projects[index] = {
         ...draft.projects[index],
-        ...updates
+        ...updates,
       };
     });
   }
@@ -705,8 +739,8 @@ export class AppStore {
    * Delete project
    */
   async deleteProject(id: string): Promise<void> {
-    this.updateState draft => {
-      const index = draft.projects.findIndex(p => p.id === id);
+    this.updateState((draft) => {
+      const index = draft.projects.findIndex((p) => p.id === id);
       if (index === -1) {
         throw new Error(`Project with id ${id} not found`);
       }
@@ -714,7 +748,7 @@ export class AppStore {
       draft.projects.splice(index, 1);
 
       // Remove project reference from tasks
-      draft.tasks.forEach(task => {
+      draft.tasks.forEach((task) => {
         if (task.projectId === id) {
           task.projectId = undefined;
         }
@@ -730,7 +764,7 @@ export class AppStore {
    * Set loading state
    */
   setLoading(isLoading: boolean): void {
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.isLoading = isLoading;
     });
   }
@@ -739,9 +773,9 @@ export class AppStore {
    * Set error message
    */
   setError(error: string | null): void {
-    this.updateState draft => {
+    this.updateState((draft) => {
       draft.error = error;
-    };
+    });
   }
 
   /**
@@ -761,7 +795,7 @@ export class AppStore {
   restoreState(savedState: AppState): void {
     this.state = {
       ...savedState,
-      dailyStats: new Map(Object.entries(savedState.dailyStats as any))
+      dailyStats: new Map(Object.entries(savedState.dailyStats as any)),
     };
     this.notifyListeners();
   }
@@ -772,7 +806,7 @@ export class AppStore {
   getSerializableState(): any {
     return {
       ...this.state,
-      dailyStats: Object.fromEntries(this.state.dailyStats)
+      dailyStats: Object.fromEntries(this.state.dailyStats),
     };
   }
 
@@ -810,7 +844,7 @@ export class AppStore {
    */
   private notifyListeners(): void {
     const readonlyState = this.getState();
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(readonlyState);
       } catch (error) {
@@ -823,7 +857,7 @@ export class AppStore {
    * Notify timer observers
    */
   private notifyTimerObservers(event: TimerEvent): void {
-    this.timerObservers.forEach(observer => {
+    this.timerObservers.forEach((observer) => {
       try {
         observer(event);
       } catch (error) {
@@ -1008,7 +1042,12 @@ export class AppStore {
     const daysInWeek = 7;
     const averageDailySessions = workSessions / daysInWeek;
 
-    return { workSessions, totalWorkTime, completedTasks, averageDailySessions };
+    return {
+      workSessions,
+      totalWorkTime,
+      completedTasks,
+      averageDailySessions,
+    };
   }
 
   /**
@@ -1031,10 +1070,15 @@ export class AppStore {
     }
 
     const totalCompletedTasks = this.state.tasks.filter(
-      t => t.status === TaskStatus.COMPLETED
+      (t) => t.status === TaskStatus.COMPLETED
     ).length;
 
-    return { totalWorkSessions, totalWorkTime, totalCompletedTasks, longestStreak };
+    return {
+      totalWorkSessions,
+      totalWorkTime,
+      totalCompletedTasks,
+      longestStreak,
+    };
   }
 
   /**
@@ -1043,7 +1087,7 @@ export class AppStore {
   private calculateFocusPercentage(): number {
     const today = new Date().toDateString();
     const todaysTasks = this.state.tasks.filter(
-      t => new Date(t.updatedAt).toDateString() === today
+      (t) => new Date(t.updatedAt).toDateString() === today
     );
 
     let totalEstimated = 0;
@@ -1069,7 +1113,7 @@ export class AppStore {
       totalWorkTime: 0,
       totalBreakTime: 0,
       completedTasks: 0,
-      longestStreak: 0
+      longestStreak: 0,
     };
   }
 

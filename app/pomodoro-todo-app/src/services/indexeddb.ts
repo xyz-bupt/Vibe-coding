@@ -31,8 +31,25 @@ export const DB_NAME = 'PomodoroTodoDB';
 
 /**
  * Current database version
+ * Increment this when making schema changes
  */
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
+
+/**
+ * Migration function type
+ */
+type MigrationFunction = (db: IDBDatabase, transaction: IDBTransaction) => void;
+
+/**
+ * Migration registry
+ * Maps version numbers to their migration functions
+ * Each migration should handle the upgrade from (version-1) to version
+ */
+const MIGRATIONS: Record<number, MigrationFunction> = {
+  2: migrateV1ToV2,
+  // Add future migrations here
+  // 3: migrateV2ToV3,
+};
 
 /**
  * Object store names
@@ -61,6 +78,58 @@ export enum TransactionMode {
 }
 
 // ============================================================================
+// Migration Functions
+// ============================================================================
+
+/**
+ * Migration from V1 to V2
+ * Adds:
+ * - Task.completedAt index for efficient completed task queries
+ * - Project.name unique index for efficient name lookups
+ */
+function migrateV1ToV2(db: IDBDatabase, transaction: IDBTransaction): void {
+  // eslint-disable-next-line no-console
+  console.info('[IndexedDB] Running migration V1 -> V2');
+
+  // Add completedAt index to tasks store
+  const taskStore = transaction.objectStore(STORE_NAMES.TASKS);
+  if (!taskStore.indexNames.contains('completedAt')) {
+    taskStore.createIndex('completedAt', 'completedAt', { unique: false });
+    // eslint-disable-next-line no-console
+    console.info('[IndexedDB] Added completedAt index to tasks store');
+  }
+
+  // Update Project.name index to be unique
+  const projectStore = transaction.objectStore(STORE_NAMES.PROJECTS);
+  if (projectStore.indexNames.contains('name')) {
+    // Need to delete and recreate the index as unique
+    projectStore.deleteIndex('name');
+  }
+  projectStore.createIndex('name', 'name', { unique: true });
+  // eslint-disable-next-line no-console
+  console.info('[IndexedDB] Recreated name index as unique on projects store');
+}
+
+/**
+ * Run migrations for a given version range
+ */
+function runMigrations(
+  db: IDBDatabase,
+  transaction: IDBTransaction,
+  fromVersion: number,
+  toVersion: number
+): void {
+  for (let version = fromVersion + 1; version <= toVersion; version++) {
+    const migration = MIGRATIONS[version];
+    if (migration) {
+      // eslint-disable-next-line no-console
+      console.info(`[IndexedDB] Running migration to version ${version}`);
+      migration(db, transaction);
+    }
+  }
+}
+
+// ============================================================================
 // Custom Error Classes
 // ============================================================================
 
@@ -75,21 +144,30 @@ export class StorageError extends Error implements CustomStorageError {
   }
 }
 
-export class DatabaseNotFoundErrorClass extends StorageError implements DatabaseNotFoundError {
+export class DatabaseNotFoundErrorClass
+  extends StorageError
+  implements DatabaseNotFoundError
+{
   constructor(originalError?: Error) {
     super('Database not found', 'DATABASE_NOT_FOUND', originalError);
     this.name = 'DatabaseNotFoundError';
   }
 }
 
-export class TransactionErrorClass extends StorageError implements TransactionError {
+export class TransactionErrorClass
+  extends StorageError
+  implements TransactionError
+{
   constructor(message: string, originalError?: Error) {
     super(message, 'TRANSACTION_ERROR', originalError);
     this.name = 'TransactionError';
   }
 }
 
-export class QuotaExceededErrorClass extends StorageError implements QuotaExceededError {
+export class QuotaExceededErrorClass
+  extends StorageError
+  implements QuotaExceededError
+{
   constructor(originalError?: Error) {
     super('Storage quota exceeded', 'QUOTA_EXCEEDED', originalError);
     this.name = 'QuotaExceededError';
@@ -106,7 +184,8 @@ export class QuotaExceededErrorClass extends StorageError implements QuotaExceed
 export class IndexedDB {
   private db: IDBDatabase | null = null;
   private initPromise: Promise<IDBDatabase> | null = null;
-  private eventListeners: Map<StorageEventType, Set<StorageEventListener>> = new Map();
+  private eventListeners: Map<StorageEventType, Set<StorageEventListener>> =
+    new Map();
 
   /**
    * Get or initialize the database connection
@@ -135,9 +214,11 @@ export class IndexedDB {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => {
-        reject(new DatabaseNotFoundErrorClass(
-          new Error(request.error?.message || 'Failed to open database')
-        ));
+        reject(
+          new DatabaseNotFoundErrorClass(
+            new Error(request.error?.message || 'Failed to open database')
+          )
+        );
       };
 
       request.onsuccess = () => {
@@ -161,12 +242,20 @@ export class IndexedDB {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
+        const transaction = (event.target as IDBOpenDBRequest).transaction;
         this.createSchema(db, event.oldVersion);
+
+        // Run incremental migrations if we have a transaction
+        if (transaction && event.oldVersion > 0) {
+          runMigrations(db, transaction, event.oldVersion, DB_VERSION);
+        }
       };
 
       request.onblocked = () => {
         // Another connection is blocking the upgrade
-        console.warn('[IndexedDB] Database upgrade blocked. Please close other tabs.');
+        console.warn(
+          '[IndexedDB] Database upgrade blocked. Please close other tabs.'
+        );
       };
     });
   }
@@ -175,24 +264,32 @@ export class IndexedDB {
    * Create database schema
    * Called during database upgrade
    */
-  private createSchema(db: IDBDatabase, oldVersion: number): void {
+  private createSchema(db: IDBDatabase, _oldVersion: number): void {
     // Create tasks store
     if (!db.objectStoreNames.contains(STORE_NAMES.TASKS)) {
-      const taskStore = db.createObjectStore(STORE_NAMES.TASKS, { keyPath: 'id' });
+      const taskStore = db.createObjectStore(STORE_NAMES.TASKS, {
+        keyPath: 'id',
+      });
       taskStore.createIndex('status', 'status', { unique: false });
       taskStore.createIndex('priority', 'priority', { unique: false });
       taskStore.createIndex('createdAt', 'createdAt', { unique: false });
       taskStore.createIndex('updatedAt', 'updatedAt', { unique: false });
       taskStore.createIndex('dueDate', 'dueDate', { unique: false });
       taskStore.createIndex('projectId', 'projectId', { unique: false });
-      taskStore.createIndex('tags', 'tags', { unique: false, multiEntry: true });
+      taskStore.createIndex('tags', 'tags', {
+        unique: false,
+        multiEntry: true,
+      });
       taskStore.createIndex('order', 'order', { unique: false });
       taskStore.createIndex('parentId', 'parentId', { unique: false });
+      taskStore.createIndex('completedAt', 'completedAt', { unique: false });
     }
 
     // Create sessions store
     if (!db.objectStoreNames.contains(STORE_NAMES.SESSIONS)) {
-      const sessionStore = db.createObjectStore(STORE_NAMES.SESSIONS, { keyPath: 'id' });
+      const sessionStore = db.createObjectStore(STORE_NAMES.SESSIONS, {
+        keyPath: 'id',
+      });
       sessionStore.createIndex('taskId', 'taskId', { unique: false });
       sessionStore.createIndex('type', 'type', { unique: false });
       sessionStore.createIndex('createdAt', 'createdAt', { unique: false });
@@ -200,7 +297,9 @@ export class IndexedDB {
       sessionStore.createIndex('completedAt', 'completedAt', { unique: false });
       sessionStore.createIndex('status', 'status', { unique: false });
       // Compound index for date range queries
-      sessionStore.createIndex('taskAndDate', ['taskId', 'createdAt'], { unique: false });
+      sessionStore.createIndex('taskAndDate', ['taskId', 'createdAt'], {
+        unique: false,
+      });
     }
 
     // Create settings store (single document store)
@@ -210,15 +309,20 @@ export class IndexedDB {
 
     // Create statistics store (one document per date)
     if (!db.objectStoreNames.contains(STORE_NAMES.STATISTICS)) {
-      const statsStore = db.createObjectStore(STORE_NAMES.STATISTICS, { keyPath: 'date' });
+      const statsStore = db.createObjectStore(STORE_NAMES.STATISTICS, {
+        keyPath: 'date',
+      });
       statsStore.createIndex('date', 'date', { unique: true });
     }
 
     // Create projects store
     if (!db.objectStoreNames.contains(STORE_NAMES.PROJECTS)) {
-      const projectStore = db.createObjectStore(STORE_NAMES.PROJECTS, { keyPath: 'id' });
+      const projectStore = db.createObjectStore(STORE_NAMES.PROJECTS, {
+        keyPath: 'id',
+      });
       projectStore.createIndex('createdAt', 'createdAt', { unique: false });
-      projectStore.createIndex('name', 'name', { unique: false });
+      // Unique index on name for efficient lookups and duplicate prevention
+      projectStore.createIndex('name', 'name', { unique: true });
     }
   }
 
@@ -242,13 +346,18 @@ export class IndexedDB {
       const request = indexedDB.deleteDatabase(DB_NAME);
 
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(new StorageError(
-        'Failed to delete database',
-        'DELETE_DATABASE_ERROR',
-        new Error(request.error?.message)
-      ));
+      request.onerror = () =>
+        reject(
+          new StorageError(
+            'Failed to delete database',
+            'DELETE_DATABASE_ERROR',
+            new Error(request.error?.message)
+          )
+        );
       request.onblocked = () => {
-        console.warn('[IndexedDB] Database deletion blocked. Please close other tabs.');
+        console.warn(
+          '[IndexedDB] Database deletion blocked. Please close other tabs.'
+        );
       };
     });
   }
@@ -262,9 +371,14 @@ export class IndexedDB {
    */
   async get<T>(storeName: string, key: IDBValidKey): Promise<T | null> {
     const db = await this.init();
-    return this.transaction<T>(db, [storeName], TransactionMode.READONLY, (store) => {
-      return this.promisifyRequest<T>(store.get(key));
-    });
+    return this.transaction<T>(
+      db,
+      [storeName],
+      TransactionMode.READONLY,
+      (store) => {
+        return this.promisifyRequest<T>(store.get(key));
+      }
+    );
   }
 
   /**
@@ -272,9 +386,14 @@ export class IndexedDB {
    */
   async getAll<T>(storeName: string): Promise<T[]> {
     const db = await this.init();
-    return this.transaction<T[]>(db, [storeName], TransactionMode.READONLY, (store) => {
-      return this.promisifyRequest<T[]>(store.getAll());
-    });
+    return this.transaction<T[]>(
+      db,
+      [storeName],
+      TransactionMode.READONLY,
+      (store) => {
+        return this.promisifyRequest<T[]>(store.getAll());
+      }
+    );
   }
 
   /**
@@ -288,27 +407,36 @@ export class IndexedDB {
     const db = await this.init();
     const results: T[] = [];
 
-    await this.transaction<void>(db, [storeName], TransactionMode.READONLY, (store) => {
-      return new Promise<void>((resolve, reject) => {
-        const request = store.openCursor();
-        request.onsuccess = (event) => {
-          const cursor = (event.target as IDBRequest).result;
-          if (cursor) {
-            const item = cursor.value as T;
-            results.push(item);
-            if (callback) {
-              callback(item);
+    await this.transaction<void>(
+      db,
+      [storeName],
+      TransactionMode.READONLY,
+      (store) => {
+        return new Promise<void>((resolve, reject) => {
+          const request = store.openCursor();
+          request.onsuccess = (event) => {
+            const cursor = (event.target as IDBRequest).result;
+            if (cursor) {
+              const item = cursor.value as T;
+              results.push(item);
+              if (callback) {
+                callback(item);
+              }
+              cursor.continue();
+            } else {
+              resolve();
             }
-            cursor.continue();
-          } else {
-            resolve();
-          }
-        };
-        request.onerror = () => reject(
-          new TransactionErrorClass('Cursor operation failed', new Error(request.error?.message))
-        );
-      });
-    });
+          };
+          request.onerror = () =>
+            reject(
+              new TransactionErrorClass(
+                'Cursor operation failed',
+                new Error(request.error?.message)
+              )
+            );
+        });
+      }
+    );
 
     return results;
   }
@@ -316,7 +444,11 @@ export class IndexedDB {
   /**
    * Add a new record to a store
    */
-  async add<T>(storeName: string, value: T, emitEvent?: StorageEventType): Promise<IDBValidKey> {
+  async add<T>(
+    storeName: string,
+    value: T,
+    emitEvent?: StorageEventType
+  ): Promise<IDBValidKey> {
     const db = await this.init();
     const key = await this.transaction<IDBValidKey>(
       db,
@@ -337,7 +469,11 @@ export class IndexedDB {
   /**
    * Put a record into a store (insert or update)
    */
-  async put<T>(storeName: string, value: T, emitEvent?: StorageEventType): Promise<IDBValidKey> {
+  async put<T>(
+    storeName: string,
+    value: T,
+    emitEvent?: StorageEventType
+  ): Promise<IDBValidKey> {
     const db = await this.init();
     const key = await this.transaction<IDBValidKey>(
       db,
@@ -386,7 +522,11 @@ export class IndexedDB {
   /**
    * Delete a record by key
    */
-  async delete(storeName: string, key: IDBValidKey, emitEvent?: StorageEventType): Promise<void> {
+  async delete(
+    storeName: string,
+    key: IDBValidKey,
+    emitEvent?: StorageEventType
+  ): Promise<void> {
     const db = await this.init();
 
     // Store value in outer scope to emit after transaction
@@ -411,9 +551,13 @@ export class IndexedDB {
                 deleteSucceeded = true;
                 resolve();
               };
-              deleteRequest.onerror = () => reject(
-                new TransactionErrorClass('Delete operation failed', new Error(deleteRequest.error?.message || 'Unknown error'))
-              );
+              deleteRequest.onerror = () =>
+                reject(
+                  new TransactionErrorClass(
+                    'Delete operation failed',
+                    new Error(deleteRequest.error?.message || 'Unknown error')
+                  )
+                );
             };
             getRequest.onerror = () => {
               // Value doesn't exist, continue with delete
@@ -422,9 +566,13 @@ export class IndexedDB {
                 deleteSucceeded = true;
                 resolve();
               };
-              deleteRequest.onerror = () => reject(
-                new TransactionErrorClass('Delete operation failed', new Error(deleteRequest.error?.message || 'Unknown error'))
-              );
+              deleteRequest.onerror = () =>
+                reject(
+                  new TransactionErrorClass(
+                    'Delete operation failed',
+                    new Error(deleteRequest.error?.message || 'Unknown error')
+                  )
+                );
             };
           } else {
             // No event needed, just delete
@@ -433,9 +581,13 @@ export class IndexedDB {
               deleteSucceeded = true;
               resolve();
             };
-            deleteRequest.onerror = () => reject(
-              new TransactionErrorClass('Delete operation failed', new Error(deleteRequest.error?.message || 'Unknown error'))
-            );
+            deleteRequest.onerror = () =>
+              reject(
+                new TransactionErrorClass(
+                  'Delete operation failed',
+                  new Error(deleteRequest.error?.message || 'Unknown error')
+                )
+              );
           }
         });
       }
@@ -521,7 +673,11 @@ export class IndexedDB {
   /**
    * Count records matching an index query
    */
-  async countByIndex(storeName: string, indexName: string, key?: IDBValidKey): Promise<number> {
+  async countByIndex(
+    storeName: string,
+    indexName: string,
+    key?: IDBValidKey
+  ): Promise<number> {
     const db = await this.init();
     return this.transaction<number>(
       db,
@@ -621,7 +777,9 @@ export class IndexedDB {
       [storeName],
       TransactionMode.READONLY,
       (store) => {
-        const source = options?.indexName ? store.index(options.indexName) : store;
+        const source = options?.indexName
+          ? store.index(options.indexName)
+          : store;
         const request = source.openCursor(options?.range, options?.direction);
 
         return new Promise<void>((resolve, reject) => {
@@ -638,9 +796,13 @@ export class IndexedDB {
               resolve();
             }
           };
-          request.onerror = () => reject(
-            new TransactionErrorClass('Cursor iteration failed', new Error(request.error?.message))
-          );
+          request.onerror = () =>
+            reject(
+              new TransactionErrorClass(
+                'Cursor iteration failed',
+                new Error(request.error?.message)
+              )
+            );
         });
       }
     );
@@ -676,9 +838,13 @@ export class IndexedDB {
               resolve();
             }
           };
-          request.onerror = () => reject(
-            new TransactionErrorClass('Update where failed', new Error(request.error?.message))
-          );
+          request.onerror = () =>
+            reject(
+              new TransactionErrorClass(
+                'Update where failed',
+                new Error(request.error?.message)
+              )
+            );
         });
       }
     );
@@ -714,9 +880,13 @@ export class IndexedDB {
               resolve();
             }
           };
-          request.onerror = () => reject(
-            new TransactionErrorClass('Delete where failed', new Error(request.error?.message))
-          );
+          request.onerror = () =>
+            reject(
+              new TransactionErrorClass(
+                'Delete where failed',
+                new Error(request.error?.message)
+              )
+            );
         });
       }
     );
@@ -746,19 +916,25 @@ export class IndexedDB {
         const result = callback(store);
 
         // Handle both synchronous and asynchronous results
-        Promise.resolve(result).then(resolve).catch((error) => {
-          transaction.abort();
-          reject(new TransactionErrorClass(
-            `Transaction callback failed: ${error.message}`,
-            error
-          ));
-        });
+        Promise.resolve(result)
+          .then(resolve)
+          .catch((error) => {
+            transaction.abort();
+            reject(
+              new TransactionErrorClass(
+                `Transaction callback failed: ${error.message}`,
+                error
+              )
+            );
+          });
       } catch (error) {
         transaction.abort();
-        reject(new TransactionErrorClass(
-          `Transaction callback threw: ${(error as Error).message}`,
-          error as Error
-        ));
+        reject(
+          new TransactionErrorClass(
+            `Transaction callback threw: ${(error as Error).message}`,
+            error as Error
+          )
+        );
         return;
       }
 
@@ -767,10 +943,12 @@ export class IndexedDB {
         if (error?.name === 'QuotaExceededError') {
           reject(new QuotaExceededErrorClass(error));
         } else {
-          reject(new TransactionErrorClass(
-            `Transaction failed: ${error?.message || 'Unknown error'}`,
-            error || undefined
-          ));
+          reject(
+            new TransactionErrorClass(
+              `Transaction failed: ${error?.message || 'Unknown error'}`,
+              error || undefined
+            )
+          );
         }
       };
 
@@ -792,12 +970,13 @@ export class IndexedDB {
   private promisifyRequest<T>(request: IDBRequest<T>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(
-        new TransactionErrorClass(
-          `IndexedDB request failed: ${request.error?.message || 'Unknown error'}`,
-          request.error || undefined
-        )
-      );
+      request.onerror = () =>
+        reject(
+          new TransactionErrorClass(
+            `IndexedDB request failed: ${request.error?.message || 'Unknown error'}`,
+            request.error || undefined
+          )
+        );
     });
   }
 
@@ -849,7 +1028,10 @@ export class IndexedDB {
         try {
           listener(event);
         } catch (error) {
-          console.error(`[IndexedDB] Error in event listener for ${eventType}:`, error);
+          console.error(
+            `[IndexedDB] Error in event listener for ${eventType}:`,
+            error
+          );
         }
       });
     }
@@ -939,7 +1121,7 @@ export class IndexedDB {
    * Compact the database by deleting old data
    */
   async compact(daysToKeep: number = 90): Promise<void> {
-    const cutoffDate = Date.now() - (daysToKeep * 24 * 60 * 60 * 1000);
+    const cutoffDate = Date.now() - daysToKeep * 24 * 60 * 60 * 1000;
 
     // Delete old completed sessions
     await this.deleteWhere(
@@ -1006,14 +1188,8 @@ export function only(key: IDBValidKey): IDBKeyRange {
 /**
  * Create a date range for querying
  */
-export function createDateRange(
-  startDate: Date,
-  endDate: Date
-): IDBKeyRange {
-  return bound(
-    startDate.getTime(),
-    endDate.getTime()
-  );
+export function createDateRange(startDate: Date, endDate: Date): IDBKeyRange {
+  return bound(startDate.getTime(), endDate.getTime());
 }
 
 /**

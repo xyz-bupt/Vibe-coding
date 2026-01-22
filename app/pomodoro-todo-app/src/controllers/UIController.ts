@@ -19,7 +19,7 @@ import {
   Statistics,
   Toast,
   ToastType,
-  AppState
+  AppState,
 } from '../types/index';
 import { AppStore } from '../store/AppStore';
 
@@ -105,35 +105,72 @@ export class UIController {
 
     // Initialize elements
     this.elements = {
-      timerDisplay: config.elements?.timerDisplay || document.getElementById('timer-display'),
-      timerState: config.elements?.timerState || document.getElementById('timer-state'),
-      timerProgressBar: config.elements?.timerProgressBar || document.getElementById('timer-progress'),
-      timerSessionType: config.elements?.timerSessionType || document.getElementById('timer-session-type'),
-      startButton: config.elements?.startButton || document.getElementById('start-button'),
-      pauseButton: config.elements?.pauseButton || document.getElementById('pause-button'),
-      resetButton: config.elements?.resetButton || document.getElementById('reset-button'),
-      skipButton: config.elements?.skipButton || document.getElementById('skip-button'),
-      taskList: config.elements?.taskList || document.getElementById('task-list'),
-      taskForm: config.elements?.taskForm || document.getElementById('task-form') as HTMLFormElement,
-      taskInput: config.elements?.taskInput || document.getElementById('task-input') as HTMLInputElement,
-      activeTaskDisplay: config.elements?.activeTaskDisplay || document.getElementById('active-task'),
-      statsPanel: config.elements?.statsPanel || document.getElementById('stats-panel'),
-      todayPomodoros: config.elements?.todayPomodoros || document.getElementById('today-pomodoros'),
-      todayFocusTime: config.elements?.todayFocusTime || document.getElementById('today-focus-time'),
-      todayCompletedTasks: config.elements?.todayCompletedTasks || document.getElementById('today-completed-tasks'),
-      modalOverlay: config.elements?.modalOverlay || document.getElementById('modal-overlay'),
-      modalContainer: config.elements?.modalContainer || document.getElementById('modal-container'),
-      modalTitle: config.elements?.modalTitle || document.getElementById('modal-title'),
-      modalContent: config.elements?.modalContent || document.getElementById('modal-content'),
-      modalClose: config.elements?.modalClose || document.getElementById('modal-close'),
-      toastContainer: config.elements?.toastContainer || document.getElementById('toast-container')
+      timerDisplay:
+        config.elements?.timerDisplay ||
+        document.getElementById('timer-display'),
+      timerState:
+        config.elements?.timerState || document.getElementById('timer-state'),
+      timerProgressBar:
+        config.elements?.timerProgressBar ||
+        document.getElementById('timer-progress'),
+      timerSessionType:
+        config.elements?.timerSessionType ||
+        document.getElementById('timer-session-type'),
+      startButton:
+        config.elements?.startButton || document.getElementById('start-button'),
+      pauseButton:
+        config.elements?.pauseButton || document.getElementById('pause-button'),
+      resetButton:
+        config.elements?.resetButton || document.getElementById('reset-button'),
+      skipButton:
+        config.elements?.skipButton || document.getElementById('skip-button'),
+      taskList:
+        config.elements?.taskList || document.getElementById('task-list'),
+      taskForm:
+        config.elements?.taskForm ||
+        (document.getElementById('task-form') as HTMLFormElement),
+      taskInput:
+        config.elements?.taskInput ||
+        (document.getElementById('task-input') as HTMLInputElement),
+      activeTaskDisplay:
+        config.elements?.activeTaskDisplay ||
+        document.getElementById('active-task'),
+      statsPanel:
+        config.elements?.statsPanel || document.getElementById('stats-panel'),
+      todayPomodoros:
+        config.elements?.todayPomodoros ||
+        document.getElementById('today-pomodoros'),
+      todayFocusTime:
+        config.elements?.todayFocusTime ||
+        document.getElementById('today-focus-time'),
+      todayCompletedTasks:
+        config.elements?.todayCompletedTasks ||
+        document.getElementById('today-completed-tasks'),
+      modalOverlay:
+        config.elements?.modalOverlay ||
+        document.getElementById('modal-overlay'),
+      modalContainer:
+        config.elements?.modalContainer ||
+        document.getElementById('modal-container'),
+      modalTitle:
+        config.elements?.modalTitle || document.getElementById('modal-title'),
+      modalContent:
+        config.elements?.modalContent ||
+        document.getElementById('modal-content'),
+      modalClose:
+        config.elements?.modalClose || document.getElementById('modal-close'),
+      toastContainer:
+        config.elements?.toastContainer ||
+        document.getElementById('toast-container'),
     };
 
     // Create toast container if it doesn't exist
     this.ensureToastContainer();
 
     // Subscribe to store changes
-    this.unsubscribeStore = this.store.subscribe(this.handleStateChange.bind(this));
+    this.unsubscribeStore = this.store.subscribe(
+      this.handleStateChange.bind(this)
+    );
 
     // Auto-bind elements if enabled
     if (this.autoBind) {
@@ -190,7 +227,7 @@ export class UIController {
     const sortedTasks = this.sortTasks(tasks);
 
     // Create task elements
-    sortedTasks.forEach(task => {
+    sortedTasks.forEach((task) => {
       const taskElement = this.createTaskElement(task);
       taskList.appendChild(taskElement);
     });
@@ -249,7 +286,9 @@ export class UIController {
    * Attach event listeners to task element
    */
   private attachTaskEventListeners(element: HTMLElement, task: Task): void {
-    const checkbox = element.querySelector('.task-checkbox input') as HTMLInputElement;
+    const checkbox = element.querySelector(
+      '.task-checkbox input'
+    ) as HTMLInputElement;
     const activateBtn = element.querySelector('.btn-activate') as HTMLElement;
     const editBtn = element.querySelector('.btn-edit') as HTMLElement;
     const deleteBtn = element.querySelector('.btn-delete') as HTMLElement;
@@ -294,9 +333,11 @@ export class UIController {
       </div>
     `;
 
-    container.querySelector('#empty-state-add-task')?.addEventListener('click', () => {
-      this.showAddTaskModal();
-    });
+    container
+      .querySelector('#empty-state-add-task')
+      ?.addEventListener('click', () => {
+        this.showAddTaskModal();
+      });
   }
 
   /**
@@ -311,8 +352,16 @@ export class UIController {
       if (!aActive && bActive) return 1;
 
       // Then by completion status
-      if (a.status === TaskStatus.COMPLETED && b.status !== TaskStatus.COMPLETED) return 1;
-      if (a.status !== TaskStatus.COMPLETED && b.status === TaskStatus.COMPLETED) return -1;
+      if (
+        a.status === TaskStatus.COMPLETED &&
+        b.status !== TaskStatus.COMPLETED
+      )
+        return 1;
+      if (
+        a.status !== TaskStatus.COMPLETED &&
+        b.status === TaskStatus.COMPLETED
+      )
+        return -1;
 
       // Then by priority
       const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
@@ -352,8 +401,11 @@ export class UIController {
     // Update progress bar
     if (progressBar) {
       const sessionTypeValue = this.store.getCurrentSessionType();
-      const duration = sessionTypeValue ? this.getSessionDuration(sessionTypeValue) : time;
-      const percentage = duration > 0 ? ((duration - time) / duration) * 100 : 0;
+      const duration = sessionTypeValue
+        ? this.getSessionDuration(sessionTypeValue)
+        : time;
+      const percentage =
+        duration > 0 ? ((duration - time) / duration) * 100 : 0;
       progressBar.style.width = `${percentage}%`;
       progressBar.className = `timer-progress-bar state-${state}`;
     }
@@ -378,11 +430,13 @@ export class UIController {
 
     // Start/pause button visibility
     if (startBtn && pauseBtn) {
-      const isRunning = state === TimerState.WORKING ||
-                       state === TimerState.SHORT_BREAK ||
-                       state === TimerState.LONG_BREAK;
+      const isRunning =
+        state === TimerState.WORKING ||
+        state === TimerState.SHORT_BREAK ||
+        state === TimerState.LONG_BREAK;
 
-      startBtn.style.display = isRunning || state === TimerState.PAUSED ? 'none' : 'flex';
+      startBtn.style.display =
+        isRunning || state === TimerState.PAUSED ? 'none' : 'flex';
       pauseBtn.style.display = isRunning ? 'flex' : 'none';
     }
 
@@ -432,15 +486,19 @@ export class UIController {
   updateStatistics(stats: Statistics): void {
     // Today's stats
     if (this.elements.todayPomodoros) {
-      this.elements.todayPomodoros.textContent = stats.today.workSessions.toString();
+      this.elements.todayPomodoros.textContent =
+        stats.today.workSessions.toString();
     }
 
     if (this.elements.todayFocusTime) {
-      this.elements.todayFocusTime.textContent = this.formatDuration(stats.today.totalWorkTime);
+      this.elements.todayFocusTime.textContent = this.formatDuration(
+        stats.today.totalWorkTime
+      );
     }
 
     if (this.elements.todayCompletedTasks) {
-      this.elements.todayCompletedTasks.textContent = stats.today.completedTasks.toString();
+      this.elements.todayCompletedTasks.textContent =
+        stats.today.completedTasks.toString();
     }
   }
 
@@ -490,7 +548,9 @@ export class UIController {
 
       overlay.classList.add('active');
 
-      const cancelBtn = contentEl.querySelector('#confirm-cancel') as HTMLButtonElement;
+      const cancelBtn = contentEl.querySelector(
+        '#confirm-cancel'
+      ) as HTMLButtonElement;
       const okBtn = contentEl.querySelector('#confirm-ok') as HTMLButtonElement;
 
       const cleanup = () => {
@@ -562,7 +622,9 @@ export class UIController {
     overlay.classList.add('active');
 
     const form = contentEl.querySelector('#add-task-form') as HTMLFormElement;
-    const cancelBtn = contentEl.querySelector('#add-task-cancel') as HTMLButtonElement;
+    const cancelBtn = contentEl.querySelector(
+      '#add-task-cancel'
+    ) as HTMLButtonElement;
 
     cancelBtn.addEventListener('click', () => {
       overlay.classList.remove('active');
@@ -571,10 +633,18 @@ export class UIController {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const title = (form.querySelector('#task-title-input') as HTMLInputElement).value;
-      const description = (form.querySelector('#task-desc-input') as HTMLTextAreaElement).value;
-      const priority = (form.querySelector('#task-priority-input') as HTMLSelectElement).value as TaskPriority;
-      const estimatedPomodoros = parseInt((form.querySelector('#task-estimates-input') as HTMLInputElement).value);
+      const title = (
+        form.querySelector('#task-title-input') as HTMLInputElement
+      ).value;
+      const description = (
+        form.querySelector('#task-desc-input') as HTMLTextAreaElement
+      ).value;
+      const priority = (
+        form.querySelector('#task-priority-input') as HTMLSelectElement
+      ).value as TaskPriority;
+      const estimatedPomodoros = parseInt(
+        (form.querySelector('#task-estimates-input') as HTMLInputElement).value
+      );
 
       try {
         await this.store.addTask({
@@ -583,7 +653,7 @@ export class UIController {
           priority,
           status: TaskStatus.TODO,
           estimatedPomodoros,
-          completedPomodoros: 0
+          completedPomodoros: 0,
         });
 
         overlay.classList.remove('active');
@@ -652,7 +722,9 @@ export class UIController {
     overlay.classList.add('active');
 
     const form = contentEl.querySelector('#edit-task-form') as HTMLFormElement;
-    const cancelBtn = contentEl.querySelector('#edit-task-cancel') as HTMLButtonElement;
+    const cancelBtn = contentEl.querySelector(
+      '#edit-task-cancel'
+    ) as HTMLButtonElement;
 
     cancelBtn.addEventListener('click', () => {
       overlay.classList.remove('active');
@@ -661,11 +733,22 @@ export class UIController {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const title = (form.querySelector('#edit-task-title-input') as HTMLInputElement).value;
-      const description = (form.querySelector('#edit-task-desc-input') as HTMLTextAreaElement).value;
-      const priority = (form.querySelector('#edit-task-priority-input') as HTMLSelectElement).value as TaskPriority;
-      const estimatedPomodoros = parseInt((form.querySelector('#edit-task-estimates-input') as HTMLInputElement).value);
-      const status = (form.querySelector('#edit-task-status-input') as HTMLSelectElement).value as TaskStatus;
+      const title = (
+        form.querySelector('#edit-task-title-input') as HTMLInputElement
+      ).value;
+      const description = (
+        form.querySelector('#edit-task-desc-input') as HTMLTextAreaElement
+      ).value;
+      const priority = (
+        form.querySelector('#edit-task-priority-input') as HTMLSelectElement
+      ).value as TaskPriority;
+      const estimatedPomodoros = parseInt(
+        (form.querySelector('#edit-task-estimates-input') as HTMLInputElement)
+          .value
+      );
+      const status = (
+        form.querySelector('#edit-task-status-input') as HTMLSelectElement
+      ).value as TaskStatus;
 
       try {
         await this.store.updateTask(task.id, {
@@ -673,7 +756,7 @@ export class UIController {
           description: description || undefined,
           priority,
           estimatedPomodoros,
-          status
+          status,
         });
 
         overlay.classList.remove('active');
@@ -692,7 +775,11 @@ export class UIController {
   /**
    * Show toast notification
    */
-  showToast(message: string, type: ToastType = 'info', duration: number = 3000): void {
+  showToast(
+    message: string,
+    type: ToastType = 'info',
+    duration: number = 3000
+  ): void {
     const container = this.ensureToastContainer();
 
     const toast = document.createElement('div');
@@ -832,7 +919,7 @@ export class UIController {
         title: input.value.trim(),
         priority: TaskPriority.MEDIUM,
         status: TaskStatus.TODO,
-        completedPomodoros: 0
+        completedPomodoros: 0,
       });
 
       input.value = '';
@@ -938,7 +1025,8 @@ export class UIController {
    */
   private getSessionTypeText(): string {
     const sessionType = this.store.getCurrentSessionType();
-    const completedCount = this.store.getState().completedSessionsSinceLastLongBreak;
+    const completedCount =
+      this.store.getState().completedSessionsSinceLastLongBreak;
     const interval = this.store.getSettings().longBreakInterval;
 
     switch (sessionType) {

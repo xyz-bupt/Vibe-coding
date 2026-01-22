@@ -5,6 +5,8 @@
  */
 
 import { createApp, destroyApp, setApp } from './App';
+import { setupGlobalErrorBoundary, ErrorToast } from './components/ErrorBoundary';
+import { getErrorHandler, ErrorSeverity } from './services/errorHandler';
 import './styles/main.css';
 
 // ============================================================================
@@ -26,7 +28,7 @@ const APP_CONFIG = {
   enableKeyboardShortcuts: true,
 
   // Enable notifications
-  enableNotifications: true
+  enableNotifications: true,
 };
 
 // ============================================================================
@@ -46,6 +48,28 @@ async function initApp(): Promise<void> {
   try {
     console.log('Pomodoro Todo App - Initializing...');
 
+    // Initialize error handler first
+    const errorHandler = getErrorHandler({
+      enableLogging: APP_CONFIG.debug,
+      enableReporting: false, // Can be enabled later with monitoring service
+      enableNotifications: true,
+      autoRecovery: true
+    });
+
+    // Setup global error boundary
+    const errorBoundary = setupGlobalErrorBoundary();
+
+    // Setup toast notifications for errors
+    const errorToast = new ErrorToast('#app');
+
+    // Listen for error events and show toasts
+    window.addEventListener('error:occurred', ((e: CustomEvent) => {
+      const { error } = e.detail;
+      if (error.severity !== ErrorSeverity.LOW) {
+        errorToast.showError(error);
+      }
+    }) as EventListener);
+
     // Create and initialize app
     appInstance = await createApp(APP_CONFIG);
 
@@ -56,9 +80,12 @@ async function initApp(): Promise<void> {
 
     // Emit app ready event
     window.dispatchEvent(new CustomEvent('app:ready'));
-
   } catch (error) {
-    console.error('Failed to initialize app:', error);
+    const errorHandler = getErrorHandler();
+    errorHandler.handleError(error, {
+      component: 'Main',
+      action: 'initialization'
+    });
 
     // Show error to user
     showInitError(error instanceof Error ? error.message : String(error));
@@ -145,14 +172,33 @@ function handleOnlineStatus(): void {
  * Global error handler
  */
 window.addEventListener('error', (event) => {
-  console.error('Global error:', event.error);
+  const errorHandler = getErrorHandler();
+  errorHandler.handleError(event.error, {
+    component: 'Global',
+    action: 'error_event',
+    additionalData: {
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno
+    }
+  });
+
+  // Prevent default browser error handling
+  event.preventDefault();
 });
 
 /**
  * Global unhandled promise rejection handler
  */
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
+  const errorHandler = getErrorHandler();
+  errorHandler.handleAsyncError(event.reason, {
+    component: 'Global',
+    action: 'promise_rejection'
+  });
+
+  // Prevent default browser error handling
+  event.preventDefault();
 });
 
 // ============================================================================
@@ -163,7 +209,9 @@ window.addEventListener('unhandledrejection', (event) => {
  * Check if DOM is ready
  */
 function isDomReady(): boolean {
-  return document.readyState === 'complete' || document.readyState === 'interactive';
+  return (
+    document.readyState === 'complete' || document.readyState === 'interactive'
+  );
 }
 
 /**
@@ -240,7 +288,7 @@ if (APP_CONFIG.debug) {
     getStore: () => appInstance?.getStore(),
     getTimer: () => appInstance?.getTimerController(),
     getUI: () => appInstance?.getUIController(),
-    getKeyboard: () => appInstance?.getKeyboardManager()
+    getKeyboard: () => appInstance?.getKeyboardManager(),
   };
   console.log('Debug mode: app available at window.app');
 }

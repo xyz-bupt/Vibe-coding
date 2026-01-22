@@ -78,7 +78,7 @@ export class App {
       enableKeyboardShortcuts: config.enableKeyboardShortcuts ?? true,
       enableNotifications: config.enableNotifications ?? true,
       debug: config.debug ?? false,
-      initialState: config.initialState
+      initialState: config.initialState,
     };
 
     // Initialize storage
@@ -140,7 +140,6 @@ export class App {
 
       this.initialized = true;
       this.log('App initialized successfully');
-
     } catch (error) {
       this.store.setLoading(false);
       this.store.setError(`Initialization failed: ${error}`);
@@ -172,13 +171,12 @@ export class App {
       const today = new Date().toISOString().split('T')[0];
       const todayStats = await this.storage.getDailyStats(today);
       if (todayStats) {
-        this.log('Loaded today\'s statistics');
+        this.log("Loaded today's statistics");
       }
 
       // Update store with loaded data
       // Note: In a real app, you would merge this with initial state
       // and handle migrations if needed
-
     } catch (error) {
       this.log('Failed to load saved data', error);
       // Don't throw - allow app to start with empty state
@@ -203,14 +201,14 @@ export class App {
         // UI will show notification via timer events
       },
       notificationEnabled: this.config.enableNotifications,
-      soundEnabled: true
+      soundEnabled: true,
     });
 
     // Initialize UIController
     this.uiController = new UIController({
       store: this.store,
       autoBind: true,
-      enableAnimations: true
+      enableAnimations: true,
     });
 
     this.log('Controllers initialized');
@@ -238,7 +236,7 @@ export class App {
       deleteTask: () => this.handleDeleteTask(),
       editTask: () => this.handleEditTask(),
       focusSearch: () => this.handleFocusSearch(),
-      toggleSidebar: () => this.handleToggleSidebar()
+      toggleSidebar: () => this.handleToggleSidebar(),
     });
 
     this.log('Keyboard shortcuts registered');
@@ -321,7 +319,7 @@ export class App {
       },
       onError: (error) => {
         console.error('Auto-save failed:', error);
-      }
+      },
     });
 
     this.autoSaveManager.start();
@@ -341,7 +339,9 @@ export class App {
       this.uiController?.setTheme(savedTheme);
     } else {
       // Detect system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
       this.uiController?.setTheme(prefersDark ? 'dark' : 'light');
     }
 
@@ -406,12 +406,15 @@ export class App {
     if (tasks.length === 0) return;
 
     const currentIndex = activeTask
-      ? tasks.findIndex(t => t.id === activeTask.id)
+      ? tasks.findIndex((t) => t.id === activeTask.id)
       : -1;
 
     const nextIndex = (currentIndex + 1) % tasks.length;
     await this.store.setActiveTask(tasks[nextIndex].id);
-    this.uiController?.showToast(`Activated: ${tasks[nextIndex].title}`, 'info');
+    this.uiController?.showToast(
+      `Activated: ${tasks[nextIndex].title}`,
+      'info'
+    );
   }
 
   private async handlePreviousTask(): Promise<void> {
@@ -421,12 +424,15 @@ export class App {
     if (tasks.length === 0) return;
 
     const currentIndex = activeTask
-      ? tasks.findIndex(t => t.id === activeTask.id)
+      ? tasks.findIndex((t) => t.id === activeTask.id)
       : 0;
 
     const prevIndex = currentIndex <= 0 ? tasks.length - 1 : currentIndex - 1;
     await this.store.setActiveTask(tasks[prevIndex].id);
-    this.uiController?.showToast(`Activated: ${tasks[prevIndex].title}`, 'info');
+    this.uiController?.showToast(
+      `Activated: ${tasks[prevIndex].title}`,
+      'info'
+    );
   }
 
   private handleDeleteTask(): void {
@@ -449,7 +455,9 @@ export class App {
   }
 
   private handleFocusSearch(): void {
-    const searchInput = document.getElementById('search-input') as HTMLInputElement;
+    const searchInput = document.getElementById(
+      'search-input'
+    ) as HTMLInputElement;
     if (searchInput) {
       searchInput.focus();
     }
@@ -544,7 +552,7 @@ export class App {
     }
 
     // Run cleanup functions
-    this.cleanupFunctions.forEach(fn => {
+    this.cleanupFunctions.forEach((fn) => {
       try {
         fn();
       } catch (error) {

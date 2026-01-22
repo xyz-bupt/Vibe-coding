@@ -4,7 +4,13 @@
  * Common utility functions used throughout the application
  */
 
-import { Task, TaskPriority, TaskStatus, Session, SessionType } from '../types/index';
+import {
+  Task,
+  TaskPriority,
+  TaskStatus,
+  Session,
+  SessionType,
+} from '../types/index';
 
 // ============================================================================
 // TIME UTILITIES
@@ -83,7 +89,7 @@ export function formatDate(timestamp: number): string {
   return date.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 }
 
@@ -97,7 +103,7 @@ export function formatDateTime(timestamp: number): string {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -178,7 +184,10 @@ export function sortTasksByDueDate(tasks: Task[]): Task[] {
 /**
  * Sort tasks by created date
  */
-export function sortTasksByCreatedDate(tasks: Task[], descending = true): Task[] {
+export function sortTasksByCreatedDate(
+  tasks: Task[],
+  descending = true
+): Task[] {
   return [...tasks].sort((a, b) => {
     return descending ? b.createdAt - a.createdAt : a.createdAt - b.createdAt;
   });
@@ -188,14 +197,17 @@ export function sortTasksByCreatedDate(tasks: Task[], descending = true): Task[]
  * Filter tasks by status
  */
 export function filterTasksByStatus(tasks: Task[], status: TaskStatus): Task[] {
-  return tasks.filter(t => t.status === status);
+  return tasks.filter((t) => t.status === status);
 }
 
 /**
  * Filter tasks by priority
  */
-export function filterTasksByPriority(tasks: Task[], priority: TaskPriority): Task[] {
-  return tasks.filter(t => t.priority === priority);
+export function filterTasksByPriority(
+  tasks: Task[],
+  priority: TaskPriority
+): Task[] {
+  return tasks.filter((t) => t.priority === priority);
 }
 
 /**
@@ -205,7 +217,7 @@ export function filterTasksDueToday(tasks: Task[]): Task[] {
   const today = getTodayDate();
   const todayTimestamp = new Date(today).getTime();
 
-  return tasks.filter(t => {
+  return tasks.filter((t) => {
     if (!t.dueDate) return false;
     const dueDate = new Date(t.dueDate);
     return dueDate.toDateString() === new Date(todayTimestamp).toDateString();
@@ -217,7 +229,7 @@ export function filterTasksDueToday(tasks: Task[]): Task[] {
  */
 export function filterTasksOverdue(tasks: Task[]): Task[] {
   const now = Date.now();
-  return tasks.filter(t => {
+  return tasks.filter((t) => {
     if (!t.dueDate || t.status === TaskStatus.COMPLETED) return false;
     return t.dueDate < now;
   });
@@ -230,7 +242,10 @@ export function getTaskCompletionPercentage(task: Task): number {
   if (!task.estimatedPomodoros || task.estimatedPomodoros === 0) {
     return 0;
   }
-  return Math.min(100, Math.round((task.completedPomodoros / task.estimatedPomodoros) * 100));
+  return Math.min(
+    100,
+    Math.round((task.completedPomodoros / task.estimatedPomodoros) * 100)
+  );
 }
 
 /**
@@ -288,15 +303,18 @@ export function getStatusText(status: TaskStatus): string {
  */
 export function getTotalFocusTime(sessions: Session[]): number {
   return sessions
-    .filter(s => s.type === SessionType.WORK && s.wasCompleted)
+    .filter((s) => s.type === SessionType.WORK && s.wasCompleted)
     .reduce((total, s) => total + s.actualDuration, 0);
 }
 
 /**
  * Get completed sessions count
  */
-export function getCompletedSessionsCount(sessions: Session[], type?: SessionType): number {
-  return sessions.filter(s => {
+export function getCompletedSessionsCount(
+  sessions: Session[],
+  type?: SessionType
+): number {
+  return sessions.filter((s) => {
     if (!s.wasCompleted) return false;
     if (type !== undefined) return s.type === type;
     return true;
@@ -311,7 +329,9 @@ export function getTodaySessions(sessions: Session[]): Session[] {
   const startOfDay = new Date(today).getTime();
   const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
 
-  return sessions.filter(s => s.startedAt >= startOfDay && s.startedAt < endOfDay);
+  return sessions.filter(
+    (s) => s.startedAt >= startOfDay && s.startedAt < endOfDay
+  );
 }
 
 /**
@@ -321,14 +341,16 @@ export function getWeekSessions(sessions: Session[]): Session[] {
   const start = getWeekStart().getTime();
   const end = getWeekEnd().getTime();
 
-  return sessions.filter(s => s.startedAt >= start && s.startedAt <= end);
+  return sessions.filter((s) => s.startedAt >= start && s.startedAt <= end);
 }
 
 /**
  * Calculate average session length
  */
 export function getAverageSessionLength(sessions: Session[]): number {
-  const workSessions = sessions.filter(s => s.type === SessionType.WORK && s.wasCompleted);
+  const workSessions = sessions.filter(
+    (s) => s.type === SessionType.WORK && s.wasCompleted
+  );
   if (workSessions.length === 0) return 0;
 
   const total = workSessions.reduce((sum, s) => sum + s.actualDuration, 0);
@@ -389,14 +411,20 @@ export function generateId(): string {
 /**
  * Query selector with null check
  */
-export function qs<T extends Element = Element>(selector: string, parent: ParentNode = document): T | null {
+export function qs<T extends Element = Element>(
+  selector: string,
+  parent: ParentNode = document
+): T | null {
   return parent.querySelector<T>(selector);
 }
 
 /**
  * Query selector all
  */
-export function qsa<T extends Element = Element>(selector: string, parent: ParentNode = document): T[] {
+export function qsa<T extends Element = Element>(
+  selector: string,
+  parent: ParentNode = document
+): T[] {
   return Array.from(parent.querySelectorAll<T>(selector));
 }
 
@@ -422,7 +450,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
     }
   });
 
-  children.forEach(child => {
+  children.forEach((child) => {
     if (typeof child === 'string') {
       element.appendChild(document.createTextNode(child));
     } else if (child instanceof Element) {
@@ -518,15 +546,21 @@ export function unique<T>(array: T[]): T[] {
 /**
  * Group array items by key
  */
-export function groupBy<T>(array: T[], keyFn: (item: T) => string): Record<string, T[]> {
-  return array.reduce((result, item) => {
-    const key = keyFn(item);
-    if (!result[key]) {
-      result[key] = [];
-    }
-    result[key].push(item);
-    return result;
-  }, {} as Record<string, T[]>);
+export function groupBy<T>(
+  array: T[],
+  keyFn: (item: T) => string
+): Record<string, T[]> {
+  return array.reduce(
+    (result, item) => {
+      const key = keyFn(item);
+      if (!result[key]) {
+        result[key] = [];
+      }
+      result[key].push(item);
+      return result;
+    },
+    {} as Record<string, T[]>
+  );
 }
 
 /**
@@ -579,13 +613,15 @@ export function mapRange(
 /**
  * Convert hex to RGB
  */
-export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+export function hexToRgb(
+  hex: string
+): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
+        b: parseInt(result[3], 16),
       }
     : null;
 }
@@ -670,5 +706,5 @@ export default {
 
   // Colors
   hexToRgb,
-  getContrastColor
+  getContrastColor,
 };

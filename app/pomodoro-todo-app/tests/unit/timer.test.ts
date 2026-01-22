@@ -36,7 +36,7 @@ describe('PomodoroTimer', () => {
     it('should accept custom settings', () => {
       const customTimer = new PomodoroTimer({
         workDuration: 1800, // 30 minutes
-        shortBreakDuration: 600 // 10 minutes
+        shortBreakDuration: 600, // 10 minutes
       });
 
       expect(customTimer.getSettings().workDuration).toBe(1800);
@@ -64,7 +64,7 @@ describe('PomodoroTimer', () => {
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           type: TimerEventType.STARTED,
-          state: TimerState.WORKING
+          state: TimerState.WORKING,
         })
       );
     });
@@ -83,7 +83,7 @@ describe('PomodoroTimer', () => {
         status: 'todo' as const,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await timer.start('work', task);
@@ -126,7 +126,7 @@ describe('PomodoroTimer', () => {
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           type: TimerEventType.PAUSED,
-          state: TimerState.PAUSED
+          state: TimerState.PAUSED,
         })
       );
     });
@@ -150,7 +150,7 @@ describe('PomodoroTimer', () => {
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           type: TimerEventType.RESUMED,
-          state: TimerState.WORKING
+          state: TimerState.WORKING,
         })
       );
     });
@@ -180,7 +180,7 @@ describe('PomodoroTimer', () => {
       expect(timer.getState()).toBe(TimerState.IDLE);
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: TimerEventType.COMPLETED
+          type: TimerEventType.COMPLETED,
         })
       );
     });
@@ -200,7 +200,7 @@ describe('PomodoroTimer', () => {
         status: 'todo' as const,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await timer.start('work', task, 1);
@@ -229,7 +229,7 @@ describe('PomodoroTimer', () => {
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           type: TimerEventType.RESET,
-          state: TimerState.IDLE
+          state: TimerState.IDLE,
         })
       );
     });
@@ -246,7 +246,7 @@ describe('PomodoroTimer', () => {
       expect(timer.getState()).toBe(TimerState.IDLE);
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: TimerEventType.SKIPPED
+          type: TimerEventType.SKIPPED,
         })
       );
     });
@@ -401,7 +401,7 @@ describe('PomodoroTimer', () => {
         status: 'todo' as const,
         completedPomodoros: 0,
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       await timer.start('work', task, 1500);
@@ -412,7 +412,7 @@ describe('PomodoroTimer', () => {
         duration: 1500,
         startedAt: expect.any(Number),
         completedAt: null,
-        taskId: 'task-1'
+        taskId: 'task-1',
       });
     });
   });
