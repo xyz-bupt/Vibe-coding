@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* Custom theme for Brain Dump Space */
+@theme {
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
+
+  --color-purple-400: #c084fc;
+  --color-purple-500: #a855f7;
+  --color-purple-600: #9333ea;
+
+  --color-pink-400: #f472b6;
+
+  --animate-fade-in: fadeIn 0.3s ease-in-out;
+  --animate-float: float 3s ease-in-out infinite;
+
+  --keyframes-fadeIn: {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  };
+
+  --keyframes-float: {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  };
+}
+
+/* Custom base styles for Brain Dump Space */
+@layer base {
+  * {
+    border-color: var(--color-zinc-800);
+  }
+
+  body {
+    background-color: var(--color-zinc-950);
+    color: var(--color-zinc-300);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #root {
+    width: 100%;
+    height: 100vh;
+  }
+}
+
+/* Custom animations for vibe */
+.glow-effect {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.capsule-fly-in {
+  animation: capsuleFlyIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes capsuleFlyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+  }
+  60% {
+    transform: translateY(5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(192, 132, 252, 0.5);
+}
+
+/* Scrollbar hide */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
