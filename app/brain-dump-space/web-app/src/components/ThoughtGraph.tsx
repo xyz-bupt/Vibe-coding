@@ -152,11 +152,15 @@ export function ThoughtGraph({
     [onNodeClick]
   );
 
-  // Reset view when data changes - with cleanup
+  // Auto-adjust view to show all nodes clearly
   useEffect(() => {
     if (graphRef.current) {
       const timeoutId = setTimeout(() => {
-        graphRef.current?.zoomToFit(300, 50);
+        // Always zoom to fit all nodes with proper padding
+        graphRef.current?.zoomToFit(400, 80);
+
+        // Center the graph
+        graphRef.current?.centerAt(0, 0, 400);
       }, 100);
       return () => clearTimeout(timeoutId);
     }
@@ -199,8 +203,8 @@ export function ThoughtGraph({
 
           // Only rotate thought nodes with orbital information
           if (orbitalNode.type === 'thought' && orbitalNode.orbitRadius !== undefined) {
-            // Update angle for smooth, peaceful rotation (faster for more visible movement)
-            const newAngle = (orbitalNode.orbitAngle || 0) + (0.0008 * speedMultiplier);
+            // Update angle for smooth orbital rotation (visible speed)
+            const newAngle = (orbitalNode.orbitAngle || 0) + (0.003 * speedMultiplier);
 
             // Find the center tag node
             const centerTag = graphData.nodes.find(
@@ -256,9 +260,10 @@ export function ThoughtGraph({
         onNodeClick={handleNodeClick}
         linkColor={() => 'rgba(63, 63, 70, 0.3)'}
         linkWidth={0.5}
-        d3AlphaDecay={0.02}
-        d3VelocityDecay={0.3}
-        warmupTicks={100}
+        d3AlphaDecay={0.015}
+        d3VelocityDecay={0.4}
+        d3AlphaMin={0.1}
+        warmupTicks={200}
         cooldownTicks={0}
         onEngineStop={() => {
           // Keep graph responsive after initial layout

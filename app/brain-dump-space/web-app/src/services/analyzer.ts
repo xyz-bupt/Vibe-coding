@@ -325,16 +325,21 @@ function normalizeAITags(aiTags: string[]): string[] {
  * @param text - Text to analyze
  * @param apiKey - OpenAI API key
  * @param apiUrl - Custom API endpoint URL (optional)
- * @param modelName - Custom model name (optional, defaults to gpt-4o-mini)
+ * @param modelName - Custom model name (required)
  * @returns Promise<AnalysisResult>
  */
 async function analyzeWithOpenAI(text: string, apiKey: string, apiUrl?: string, modelName?: string): Promise<AnalysisResult> {
-  const url = apiUrl
-    ? `${apiUrl.replace(/\/$/, '')}/chat/completions`
-    : 'https://api.openai.com/v1/chat/completions';
+  if (!apiUrl) {
+    throw new Error('API URL is required. Please configure it in settings.');
+  }
 
-  // Use custom model name or default
-  const model = modelName || 'gpt-4o-mini';
+  const url = `${apiUrl.replace(/\/$/, '')}/chat/completions`;
+
+  // Use custom model name or error if not provided
+  const model = modelName;
+  if (!model) {
+    throw new Error('Model name is required. Please configure it in settings.');
+  }
 
   console.log('[OpenAI] API Call - Model:', model);
 
@@ -517,9 +522,11 @@ Response format: ["Tag1", "Tag2"]`;
  * @returns Promise<AnalysisResult>
  */
 async function analyzeWithAnthropic(text: string, apiKey: string, apiUrl?: string): Promise<AnalysisResult> {
-  const url = apiUrl
-    ? `${apiUrl.replace(/\/$/, '')}/v1/messages`
-    : 'https://api.anthropic.com/v1/messages';
+  if (!apiUrl) {
+    throw new Error('API URL is required. Please configure it in settings.');
+  }
+
+  const url = `${apiUrl.replace(/\/$/, '')}/v1/messages`;
 
   console.log('[Anthropic] API Call - Model: claude-3-haiku');
 
@@ -682,8 +689,8 @@ export class ThoughtAnalyzer {
       useRealAI: settings.useRealAI,
       hasOpenAIKey: !!settings.openaiApiKey,
       hasAnthropicKey: !!settings.anthropicApiKey,
-      apiUrl: settings.apiUrl,
-      modelName: settings.modelName || 'gpt-4o-mini (default)'
+      apiUrl: settings.apiUrl || '(not set)',
+      modelName: settings.modelName || '(not set)'
     });
   }
 
@@ -754,13 +761,19 @@ export class ThoughtAnalyzer {
     });
 
     // Check 4: API URL
-    const apiUrl = this.settings.apiUrl
-      ? (this.settings.anthropicApiKey
-          ? `${this.settings.apiUrl.replace(/\/$/, '')}/v1/messages`
-          : `${this.settings.apiUrl.replace(/\/$/, '')}/chat/completions`)
-      : (this.settings.anthropicApiKey
-          ? 'https://api.anthropic.com/v1/messages'
-          : 'https://api.openai.com/v1/chat/completions');
+    if (!this.settings.apiUrl) {
+      checks.push({
+        name: 'API URL',
+        status: 'fail' as const,
+        message: '请先在设置中配置 API 端点地址'
+      });
+      console.log('[Diagnostics] ===== DIAGNOSTICS END (FAILED) =====');
+      return { success: false, checks };
+    }
+
+    const apiUrl = this.settings.anthropicApiKey
+      ? `${this.settings.apiUrl.replace(/\/$/, '')}/v1/messages`
+      : `${this.settings.apiUrl.replace(/\/$/, '')}/chat/completions`;
 
     console.log('[Diagnostics] API URL:', apiUrl);
 

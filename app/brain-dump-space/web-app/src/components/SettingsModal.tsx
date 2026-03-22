@@ -272,10 +272,10 @@ export function SettingsModal({ settings, onSave, isOpen, onClose }: SettingsMod
               type="url"
               value={localSettings.apiUrl || ''}
               onChange={(e) => setLocalSettings({ ...localSettings, apiUrl: e.target.value })}
-              placeholder="https://api.openai.com/v1"
+              placeholder="https://your-api-endpoint/v1"
               className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 text-sm focus:outline-none focus:border-purple-500 transition-colors font-mono"
             />
-            <p className="text-xs text-zinc-600 mt-1">自定义 API 端点 URL（可选）</p>
+            <p className="text-xs text-zinc-600 mt-1">自定义 API 端点 URL（使用 AI 时必填）</p>
           </div>
 
           {/* Model Name */}
@@ -288,12 +288,10 @@ export function SettingsModal({ settings, onSave, isOpen, onClose }: SettingsMod
               type="text"
               value={localSettings.modelName || ''}
               onChange={(e) => setLocalSettings({ ...localSettings, modelName: e.target.value })}
-              placeholder="gpt-4o-mini"
+              placeholder="your-model-name"
               className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 text-sm focus:outline-none focus:border-purple-500 transition-colors font-mono"
             />
-            <p className="text-xs text-zinc-600 mt-1">
-              常用模型: gpt-4o-mini, glm-4-flash, qwen-plus, deepseek-chat
-            </p>
+            <p className="text-xs text-zinc-600 mt-1">模型名称，如 glm-4-flash, qwen-plus, deepseek-chat</p>
           </div>
 
           {/* OpenAI API Key */}

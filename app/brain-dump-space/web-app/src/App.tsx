@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { VoidInput } from './components/VoidInput';
 import { ThoughtGraph, GraphTooltip } from './components/ThoughtGraph';
 import { SettingsModal, SettingsButton } from './components/SettingsModal';
+import { AIChatPanel, ChatToggleButton } from './components/AIChatPanel';
 import { StorageService } from './services/storage';
 import { thoughtAnalyzer } from './services/analyzer';
 import { transformToGraph } from './utils/graphTransformer';
@@ -31,6 +32,23 @@ function App() {
 
   // Footer state
   const [isFooterExpanded, setIsFooterExpanded] = useState(false);
+
+  // AI Chat state
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Check if AI config is set
+  const hasAIConfig = useCallback(() => {
+    try {
+      const config = localStorage.getItem('ai-config');
+      if (config) {
+        const parsed = JSON.parse(config);
+        return !!(parsed.apiUrl && parsed.apiKey && parsed.model);
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }, []);
 
   // Use a ref to track updateGraph without causing dependency cycles
   const updateGraphRef = useRef<(thoughtsToUpdate: Thought[]) => void>(() => {});
@@ -214,7 +232,7 @@ function App() {
                 {thoughts.map((thought) => (
                   <div
                     key={thought.id}
-                    className="group pointer-events-auto bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl p-3 hover:bg-zinc-900 hover:border-zinc-700 transition-all cursor-pointer"
+                    className="group pointer-events-auto bg-zinc-900/95 backdrop-blur-sm border border-zinc-700 rounded-xl p-3 hover:bg-zinc-800 hover:border-zinc-600 transition-all cursor-pointer"
                     onClick={() => {
                       if (confirm(`删除: "${escapeHtml(thought.content).substring(0, 30)}..."?`)) {
                         handleDeleteThought(thought.id);
@@ -223,7 +241,7 @@ function App() {
                     title="点击删除"
                   >
                     {/* Content */}
-                    <p className="text-sm text-zinc-300 line-clamp-2 mb-2">
+                    <p className="text-sm text-zinc-100 line-clamp-2 mb-2">
                       {escapeHtml(thought.content)}
                     </p>
 
@@ -246,7 +264,7 @@ function App() {
                     )}
 
                     {/* Timestamp */}
-                    <p className="text-xs text-zinc-600">
+                    <p className="text-xs text-zinc-400">
                       {formatDate(thought.createdAt)}
                     </p>
                   </div>
@@ -262,7 +280,7 @@ function App() {
                 {thoughts.slice(0, 3).map((thought) => (
                   <div
                     key={thought.id}
-                    className="pointer-events-auto px-4 py-2 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-full text-sm text-zinc-400 hover:text-zinc-200 hover:border-zinc-600 hover:bg-zinc-800 transition-all cursor-pointer"
+                    className="pointer-events-auto px-4 py-2 bg-zinc-900/95 backdrop-blur-sm border border-zinc-700 rounded-full text-sm text-zinc-200 hover:text-white hover:border-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer"
                     onClick={() => setIsFooterExpanded(true)}
                   >
                     {escapeHtml(thought.content.substring(0, 15))}
@@ -271,7 +289,7 @@ function App() {
                 ))}
                 {thoughts.length > 3 && (
                   <div
-                    className="pointer-events-auto px-4 py-2 bg-zinc-800/50 backdrop-blur-sm border border-zinc-800/50 rounded-full text-sm text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 transition-all cursor-pointer"
+                    className="pointer-events-auto px-4 py-2 bg-zinc-800/80 backdrop-blur-sm border border-zinc-700 rounded-full text-sm text-zinc-300 hover:text-zinc-100 hover:border-zinc-500 transition-all cursor-pointer"
                     onClick={() => setIsFooterExpanded(true)}
                   >
                     +{thoughts.length - 3} 更多
@@ -289,6 +307,18 @@ function App() {
         onSave={handleSettingsSave}
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* AI Chat Panel */}
+      <AIChatPanel
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
+
+      {/* Chat Toggle Button */}
+      <ChatToggleButton
+        onClick={() => setIsChatOpen(true)}
+        hasConfig={hasAIConfig()}
       />
 
       {/* Tooltip */}
