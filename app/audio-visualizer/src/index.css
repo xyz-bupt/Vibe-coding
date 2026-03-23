@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #000;
+  overflow: hidden; /* 防止滚动 */
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* 自定义 hover 效果 */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+/* 标题发光动画 */
+@keyframes titlePulse {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5),
+                 0 0 40px rgba(0, 255, 255, 0.3),
+                 0 0 60px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(0, 255, 255, 0.8),
+                 0 0 60px rgba(0, 255, 255, 0.5),
+                 0 0 90px rgba(0, 255, 255, 0.3);
+  }
+}
+
+.title-glow {
+  animation: titlePulse 3s ease-in-out infinite;
+}
