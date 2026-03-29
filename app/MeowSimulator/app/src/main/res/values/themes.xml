@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MeowSimulator" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/meow_pink</item>
+        <item name="colorPrimaryVariant">@color/meow_purple</item>
+        <item name="colorOnPrimary">@color/meow_white</item>
+        <item name="colorSecondary">@color/meow_purple</item>
+        <item name="colorSecondaryVariant">@color/meow_purple_dark</item>
+        <item name="colorOnSecondary">@color/meow_white</item>
+        <item name="android:statusBarColor">@color/meow_pink</item>
+        <item name="android:navigationBarColor">@color/meow_pink</item>
+    </style>
+</resources>

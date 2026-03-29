@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">猫娘模拟器</string>
+    <string name="instructions">使用方法：\n\n1. 开启「悬浮猫娘输入框」开关\n2. 授予悬浮窗权限\n3. 打开微信\n4. 屏幕底部出现粉色输入框\n5. 在输入框里打字（自动加喵～）\n6. 点「复制喵～」按钮\n7. 在微信聊天框里粘贴 → 发送\n\n提示：\n- 输入框可以拖动到任意位置\n- 点「收起」可以最小化，不挡视线\n- 前缀后缀可以在主界面自定义\n\n卸载说明：\n1. 关闭悬浮输入框开关\n2. 正常卸载应用即可\n3. 卸载后不会对系统有任何影响</string>
+    <string name="safety_notice">本应用安全无害，不收集个人信息。\n卸载后无残留影响。</string>
+</resources>
