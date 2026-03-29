@@ -34,20 +34,6 @@
 | [tic-tac-toe](./Game/tic-tac-toe/) | 策略井字棋 - 棋子会消失的特殊规则策略游戏 |
 | [中国象棋游戏](./Game/中国象棋游戏/) | 中国象棋 - 支持人机对弈和残局挑战的完整象棋游戏 |
 
----
-
-### 猫娘模拟器
-
-自动给聊天消息加喵～的工具，支持三平台：
-
-| 平台 | 路径 | 使用方式 |
-|------|------|----------|
-| Android | `app/MeowSimulator/猫娘模拟器-v1.0.0.apk` | 安装APK → 开启悬浮输入框 → 打字 → 复制 → 粘贴发送 |
-| macOS | `app/MeowSimulator/mac/auto_meow_mac.py` | `pip3 install pynput` → `python3 auto_meow_mac.py` |
-| Windows | `app/MeowSimulator/win/auto_meow_win.py` | 管理员运行 → 系统托盘控制开关 |
-
-**卸载：** 关闭开关/Ctrl+C退出 → 删除文件，无任何残留
-
 ## License
 
 MIT
