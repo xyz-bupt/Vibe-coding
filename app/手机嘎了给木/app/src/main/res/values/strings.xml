@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">手机嘎了给木</string>
+    <string name="accessibility_description">手机嘎了给木 — 在你操作手机时显示互动气泡和好感度变化，为你带来有趣的屏幕互动体验。</string>
+    <string name="status_enabled">服务运行中，手机四周会显示互动效果</string>
+    <string name="status_disabled">服务未开启，请点击下方按钮开启</string>
+    <string name="btn_open_settings">开启无障碍服务</string>
+    <string name="btn_stop">停止服务</string>
+</resources>

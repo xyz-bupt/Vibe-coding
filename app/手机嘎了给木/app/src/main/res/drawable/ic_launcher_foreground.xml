@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 粉红色心形 -->
+    <path
+        android:fillColor="#FF69B4"
+        android:pathData="M54,72 C54,72 30,56 30,44 C30,36 36,30 42,30 C48,30 52,34 54,38 C56,34 60,30 66,30 C72,30 78,36 78,44 C78,56 54,72 54,72Z" />
+    <!-- 蓝色小气泡装饰 -->
+    <path
+        android:fillColor="#4169E1"
+        android:fillAlpha="0.6"
+        android:pathData="M28,74 A8,8 0 1,1 28,74.01Z" />
+    <path
+        android:fillColor="#4169E1"
+        android:fillAlpha="0.4"
+        android:pathData="M76,68 A6,6 0 1,1 76,68.01Z" />
+    <path
+        android:fillColor="#FF69B4"
+        android:fillAlpha="0.5"
+        android:pathData="M72,76 A5,5 0 1,1 72,76.01Z" />
+</vector>

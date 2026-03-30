@@ -1,0 +1,2 @@
+rootProject.name = '手机嘎了给木'
+include ':app'

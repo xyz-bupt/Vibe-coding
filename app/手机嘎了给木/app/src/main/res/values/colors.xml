@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pink_glow">#FFFF69B4</color>
+    <color name="pink_glow_soft">#80FF69B4</color>
+    <color name="blue_glow">#FF4169E1</color>
+    <color name="blue_glow_soft">#804169E1</color>
+    <color name="white_text">#FFFFFFFF</color>
+    <color name="black_bg">#FF1A1A2E</color>
+    <color name="black_bg_dark">#FF0D0D1A</color>
+</resources>
