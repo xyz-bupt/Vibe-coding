@@ -12,3 +12,10 @@ node_modules/
 
 # Logs
 *.log
+
+# Android build
+build/
+.gradle/
+local.properties
+*.apk
+*.class

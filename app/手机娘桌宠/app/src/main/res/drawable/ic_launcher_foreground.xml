@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 青色猫耳 -->
+    <path
+        android:fillColor="#00CED1"
+        android:pathData="M54,28 L38,52 L70,52 Z" />
+    <!-- 猫耳内部 -->
+    <path
+        android:fillColor="#99FF69B4"
+        android:pathData="M54,34 L44,50 L64,50 Z" />
+    <!-- 脸部 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,56 L72,56 L72,78 Q72,84 66,84 L42,84 Q36,84 36,78 Z" />
+    <!-- 眼睛 -->
+    <path
+        android:fillColor="#00CED1"
+        android:pathData="M44,62 A4,4 0 1,1 44,62.01Z" />
+    <path
+        android:fillColor="#00CED1"
+        android:pathData="M64,62 A4,4 0 1,1 64,62.01Z" />
+    <!-- 嘴巴 -->
+    <path
+        android:fillColor="#FF69B4"
+        android:pathData="M52,72 Q54,76 56,72" />
+</vector>

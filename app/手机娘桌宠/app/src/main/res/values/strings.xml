@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">手机娘桌宠</string>
+    <string name="accessibility_description">手机娘桌宠 — 在屏幕边缘常驻一只可爱的猫娘，她会随着你的操作积累好感度，空闲太久好感度会下降哦~</string>
+    <string name="status_enabled">服务运行中，猫娘正在陪伴你~</string>
+    <string name="status_disabled">服务未开启，请点击下方按钮开启</string>
+    <string name="btn_open_settings">开启无障碍服务</string>
+    <string name="btn_stop">停止服务</string>
+</resources>
